@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Building2, BadgeCheck, Clock, XCircle } from "lucide-react";
-import { BarChart, Bar, XAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { BarChart, Bar, XAxis, ResponsiveContainer } from "recharts";
 
 // Sample data for the chart
 const dailyData = Array.from({ length: 31 }, (_, i) => ({
