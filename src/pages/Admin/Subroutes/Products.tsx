@@ -2,26 +2,11 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   Building2,
   Wallet,
   MoreVertical,
-  ChevronLeft,
-  ChevronRight,
   Eye,
   Plus,
   Smartphone,
@@ -32,34 +17,6 @@ import {
 } from "lucide-react";
 // import Image from "next/image"
 import { Link } from "react-router";
-
-const businesses = Array(6).fill({
-  name: "The book hub",
-  address: "2nd Floor, Maryland Mall",
-  category: [
-    "Commercial",
-    "Restaurant",
-    "Hospitality",
-    "Restaurant",
-    "Technology",
-    "Restaurant",
-  ][Math.floor(Math.random() * 6)],
-});
-
-const metrics = [
-  {
-    title: "All businesses",
-    value: "3,283,550",
-    icon: Building2,
-    increase: "75%",
-  },
-  {
-    title: "Promotions",
-    value: "283,550",
-    icon: Wallet,
-    increase: "75%",
-  },
-];
 
 const products = [
   {

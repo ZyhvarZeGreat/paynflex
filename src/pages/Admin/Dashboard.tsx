@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Link } from "react-router";
 import { useLocation } from "react-router";
-import React from "react";
+// import React from "react";
 import logo from "@/assets/logo-signup.png";
 const menuItems = [
   {
@@ -159,11 +159,7 @@ export function Dashboard() {
                       pathname.includes(item.href) && "text-white font-medium"
                     )}
                   >
-                    {React.isValidElement(item.icon) ? (
-                      item.icon
-                    ) : (
-                      <item.icon className="mr-2 h-4 w-4" />
-                    )}
+                    {item.icon}
                     <p className="text-base">{item.label}</p>
                   </Link>
                 </SidebarMenuButton>

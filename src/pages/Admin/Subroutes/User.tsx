@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 // import { Users, CheckCircle, UserCog, UserX } from "lucide-react";
-import React from "react";
+// import React from "react";
 import { BarChart, Bar, XAxis, Rectangle } from "recharts";
 import {
   ChartConfig,
@@ -185,11 +185,7 @@ export default function User() {
                 className={`rounded-lg  h-[40px] w-[40px] justify-center flex items-center `}
                 style={{ backgroundColor: metric.fill }}
               >
-                {React.isValidElement(metric.icon) ? (
-                  metric.icon
-                ) : (
-                  <metric.icon className="mr-2 h-4 w-4" />
-                )}
+                {metric.icon}
               </div>
               <div className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-500">
                 ↑{metric.increase}
@@ -207,7 +203,7 @@ export default function User() {
       <Card className=" p-6">
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
           <Select defaultValue="user-activity">
-            <SelectTrigger className="w-[180px] border-zinc-800 bg-transparent text-black">
+            <SelectTrigger className="w-[130px] border-zinc-200 bg-transparent text-sm font-semibold text-[#4C5058]">
               <SelectValue placeholder="Select view" />
             </SelectTrigger>
             <SelectContent className="border-zinc-800 bg-zinc-900 text-black">
@@ -217,7 +213,7 @@ export default function User() {
             </SelectContent>
           </Select>
           <Select defaultValue="daily">
-            <SelectTrigger className="w-[180px] border-zinc-800 bg-transparent text-black">
+            <SelectTrigger className="w-[130px] border-zinc-200 bg-transparent text-sm font-semibold text-[#4C5058]">
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
             <SelectContent className="border-zinc-800 bg-zinc-900 text-black">
@@ -232,7 +228,7 @@ export default function User() {
             <BarChart accessibilityLayer data={chartData}>
               {/* <CartesianGrid vertical={false} /> */}
               <XAxis
-                dataKey="users"
+                dataKey="day"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}

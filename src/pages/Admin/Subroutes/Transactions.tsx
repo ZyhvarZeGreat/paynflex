@@ -121,13 +121,14 @@ export default function Transaction() {
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-[#6C5DD3]" />
                               <span>
-                                Successful: {payload[0].value.toLocaleString()}
+                                Successful:{" "}
+                                {payload?.[0]?.value?.toLocaleString()}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-[#4DAFFF]" />
                               <span>
-                                Failed: {payload[1].value.toLocaleString()}
+                                Failed: {payload?.[1]?.value?.toLocaleString()}
                               </span>
                             </div>
                           </div>

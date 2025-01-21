@@ -9,9 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Import, Plus, MoreVertical, Eye } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer, LineChart, Line } from "recharts";
 import { RadialChart } from "@/Global/RadialChart";
+import { Eye, MoreVertical } from "lucide-react";
 
 // Sample data for the charts
 const dailyData = Array.from({ length: 31 }, (_, i) => ({
@@ -20,7 +20,7 @@ const dailyData = Array.from({ length: 31 }, (_, i) => ({
   isHighlight: i === 12,
 }));
 
-const verificationData = Array.from({ length: 20 }, (_, i) => ({
+const verificationData = Array.from({ length: 20 }, () => ({
   value: Math.random() * 100,
 }));
 

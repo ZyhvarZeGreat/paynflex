@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/Auth/LoginPage";
 import Home from "./pages/Home/Home";
-import { RequireAuth } from "./Global/Require_Auth";
+// import { RequireAuth } from "./Global/Require_Auth";
 import DashboardWrapper from "./pages/Admin/Wrapper";
 import { Dashboard } from "./pages/Admin/Dashboard";
 import Businesses from "./pages/Admin/Subroutes/Businesses";
@@ -9,7 +9,7 @@ import Products from "./pages/Admin/Subroutes/Products";
 import Settings from "./pages/Admin/Subroutes/Settings";
 import User from "./pages/Admin/Subroutes/User";
 import Transactions from "./pages/Admin/Subroutes/Transactions";
-import { AuthProvider } from "./hooks/useAuth";
+// import { AuthProvider } from "./hooks/useAuth";
 import Dashboard_Home from "./pages/Admin/Subroutes/Dashboard-Home";
 
 function App() {

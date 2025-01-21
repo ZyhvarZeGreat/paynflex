@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ShieldCheck, Globe, Zap } from "lucide-react";
+// import { ShieldCheck, Globe, Zap } from "lucide-react";
 import { Link } from "react-router";
 import star from "@/assets/features-star.png";
 import AnimatedHero from "@/Global/Animated_Hero";

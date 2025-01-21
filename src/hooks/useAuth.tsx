@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signin = async (email: string, password: string) => {
     // TODO: Implement actual authentication logic here
     // This is just a mock implementation
+    console.log(password);
     setUser({ id: "1", email: email });
   };
 

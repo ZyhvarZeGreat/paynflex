@@ -2,7 +2,7 @@ import { Outlet } from "react-router";
 import { Sidebar } from "../../components/ui/sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Import, Plus, MoreVertical, Eye } from "lucide-react";
+import { Import, Plus } from "lucide-react";
 export default function DashboardWrapper({
   children,
 }: {

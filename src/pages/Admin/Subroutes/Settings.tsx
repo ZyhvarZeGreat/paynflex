@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, MoreVertical, Search } from "lucide-react";
+import { MoreVertical, Search } from "lucide-react";
 
 const users = [
   {
