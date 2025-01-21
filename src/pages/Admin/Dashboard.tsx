@@ -142,7 +142,7 @@ export function Dashboard() {
               <div className="relative">
                 <div
                   className={cn(
-                    "absolute h-[50px] w-[90%] rounded-lg bg-gradient-to-r from-[#2B3446] to-[#36353D] transition-transform duration-300",
+                    "absolute h-[50px] w-[0%] rounded-lg bg-gradient-to-r from-[#2B3446] to-[#36353D] transition-transform duration-300",
                     pathname.includes(item.href) ? "opacity-100" : "opacity-0"
                   )}
                   style={{
