@@ -18,6 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Search } from "lucide-react";
+import ActivityLog from "@/Global/Activity";
+import RolesAndPermissions from "@/Global/RolesAndPermisions";
+import { ProfileCard } from "@/Global/Profile";
+import { PasswordSettings } from "@/Global/Password";
+import { useState } from "react";
+import { EditProfile } from "@/Global/EditProfile";
 
 const users = [
   {
@@ -59,28 +65,9 @@ const users = [
 ];
 
 export default function Settings() {
+  const [scene, setScene] = useState<"profile" | "edit-profile">("profile");
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
-      {/* Header */}
-      {/* <header className="flex items-center justify-between border-b px-6 py-4">
-        <h1 className="text-lg font-semibold">PRODUCTS</h1>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button>
-          <div className="flex items-center gap-2">
-            <span>Chike Opara</span>
-            <img
-              src="/placeholder.svg?height=32&width=32"
-              alt="Profile"
-              width={32}
-              height={32}
-              className="rounded-full"
-            />
-          </div>
-        </div>
-      </header> */}
-
       {/* Main Content */}
       <main className="p-6">
         <Tabs defaultValue="users">
@@ -150,6 +137,22 @@ export default function Settings() {
                 </TableBody>
               </Table>
             </div>
+          </TabsContent>
+          <TabsContent value="activity" className="space-y-6">
+            <ActivityLog />
+          </TabsContent>
+          <TabsContent value="roles" className="space-y-6">
+            <RolesAndPermissions />
+          </TabsContent>
+          <TabsContent value="password" className="space-y-6">
+            <PasswordSettings />
+          </TabsContent>
+          <TabsContent value="personal" className="space-y-6">
+            {scene === "profile" ? (
+              <ProfileCard scene={scene} setScene={setScene} />
+            ) : (
+              <EditProfile scene={scene} setScene={setScene} />
+            )}
           </TabsContent>
         </Tabs>
       </main>
