@@ -93,7 +93,7 @@ export default function Transaction() {
           </Select>
         </div>
         <div className="relative">
-          <div className="absolute left-1/2 top-20 -translate-x-1/2 rounded-full bg-[#6C5DD3] px-4 py-2 text-sm text-black">
+          <div className="absolute left-1/2 top-20 -translate-x-1/2 rounded-full bg-[#0D8BFA] px-4 py-2 text-sm text-black">
             343,850 transactions
           </div>
           <div className="h-[400px] w-full">
@@ -109,7 +109,7 @@ export default function Transaction() {
                   tick={{ fill: "#71717a" }}
                   padding={{ left: 10, right: 10 }}
                 />
-                <Tooltip
+                {/* <Tooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       return (
@@ -119,14 +119,14 @@ export default function Transaction() {
                           </div>
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-[#6C5DD3]" />
+                              <div className="h-2 w-2 rounded-full bg-[#0B106E]" />
                               <span>
                                 Successful:{" "}
                                 {payload?.[0]?.value?.toLocaleString()}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-[#4DAFFF]" />
+                              <div className="h-2 w-2 rounded-full bg-[#0D8BFA]" />
                               <span>
                                 Failed: {payload?.[1]?.value?.toLocaleString()}
                               </span>
@@ -137,13 +137,19 @@ export default function Transaction() {
                     }
                     return null;
                   }}
-                />
+                /> */}
                 <Bar
                   dataKey="successful"
-                  fill="#6C5DD3"
+                  fill="#0D8BFA"
+                  barSize={14}
                   radius={[4, 4, 0, 0]}
                 />
-                <Bar dataKey="failed" fill="#4DAFFF" radius={[4, 4, 0, 0]} />
+                <Bar
+                  barSize={14}
+                  dataKey="failed"
+                  fill="#0B106E"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
