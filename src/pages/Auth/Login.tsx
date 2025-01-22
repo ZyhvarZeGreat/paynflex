@@ -16,15 +16,23 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import bg from "@/assets/Background.png";
 import logo_login from "@/assets/logo-login.png";
-export default function LoginPage() {
+import { login } from "@/services/login";
+
+export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Here you would typically handle the login logic
+    // await register({
+    //   email: email,
+    //   password: password,
+    //   phone_number: "07082749179",
+    // });
     console.log("Login submitted");
-    // For demonstration, we'll just redirect to a dashboard
+
     navigate("/dashboard");
   };
 
@@ -52,7 +60,7 @@ export default function LoginPage() {
       style={{ backgroundImage: `url(${bg})` }}
       className={`min-h-screen bg-[#4645B0]  font-inter  flex items-center justify-center bg-cover bg-center bg-no-repeat`}
     >
-      <div className="absolute inset-0 "></div>
+      {/* <div className="absolute inset-0 "></div> */}
       <motion.div
         initial="hidden"
         animate="visible"
@@ -81,6 +89,8 @@ export default function LoginPage() {
                   Email
                 </Label>
                 <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   id="email"
                   type="email"
                   placeholder="Enter your email"
@@ -93,6 +103,8 @@ export default function LoginPage() {
                 </Label>
                 <div className="relative">
                   <Input
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
@@ -120,7 +132,20 @@ export default function LoginPage() {
                 </motion.div>
               </motion.div>
               <motion.div variants={itemVariants}>
-                <Button type="submit" className="w-full bg-[#222375] ">
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    login({
+                      phoneNumber: "07082749179",
+                      password: password,
+                    }).then((response) => {
+                      document.cookie = `token=${response.token}; path=/; secure; samesite=strict`;
+                      navigate("/admin/dashboard");
+                    });
+                  }}
+                  // type="submit"
+                  className="w-full bg-[#222375] "
+                >
                   Login
                 </Button>
               </motion.div>

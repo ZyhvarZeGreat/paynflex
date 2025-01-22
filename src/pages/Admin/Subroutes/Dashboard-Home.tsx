@@ -12,7 +12,10 @@ import { Button } from "@/components/ui/button";
 import { BarChart, Bar, ResponsiveContainer, LineChart, Line } from "recharts";
 import { RadialChart } from "@/Global/RadialChart";
 import { Eye, MoreVertical } from "lucide-react";
-
+import glo from "@/assets/telco icons/glo.png";
+import airtel from "@/assets/telco icons/airtel.png";
+import etisalat from "@/assets/telco icons/9mobile.png";
+import mtn from "@/assets/telco icons/mtn.png";
 // Sample data for the charts
 const dailyData = Array.from({ length: 31 }, (_, i) => ({
   day: i + 1,
@@ -26,9 +29,9 @@ const verificationData = Array.from({ length: 20 }, () => ({
 
 export default function DashboardHome() {
   return (
-    <div className="p-6">
+    <div className=" p-4 lg:p-6">
       <div className="flex flex-col gap-6 ">
-        <div className="w-full  h-[400px] gap-8 grid grid-cols-12">
+        <div className="w-full  lg:h-[400px] gap-8 grid grid-cols-12">
           <div className="space-y-6 col-span-12  lg:col-span-8 ">
             {/* Stats Grid */}
             <div className="grid  pr-4    border  gap-y-6 lg:gap-y-0  w-full sm:grid-cols-6 lg:grid-cols-12">
@@ -146,8 +149,8 @@ export default function DashboardHome() {
             </div>
           </Card>
         </div>
-        <div className=" h-[400px] grid grid-cols-12 gap-12  w-full">
-          <div className=" h-[400px] flex flex-col gap-4   col-span-12   lg:col-span-4  md:grid-cols-2">
+        <div className=" lg:h-[400px] grid grid-cols-12 gap-12  w-full">
+          <div className=" lg:h-[400px] flex flex-col gap-4   col-span-12   lg:col-span-4  md:grid-cols-2">
             <Card className="h-1/2 gap-3 flex flex-col justify-center  p-4">
               <div className=" w-full flex items-center justify-between">
                 <h3 className="font-semibold">Pending Verification</h3>
@@ -221,10 +224,30 @@ export default function DashboardHome() {
               </div>
               <div className="space-y-4 overflow-y-auto">
                 {[
-                  { provider: "9mobile", price: "343,850.00", views: "23,560" },
-                  { provider: "glo", price: "343,850.00", views: "23,560" },
-                  { provider: "airtel", price: "343,850.00", views: "23,560" },
-                  { provider: "mtn", price: "343,850.00", views: "23,560" },
+                  {
+                    provider: "9mobile",
+                    price: "343,850.00",
+                    views: "23,560",
+                    icon: etisalat,
+                  },
+                  {
+                    provider: "glo",
+                    price: "343,850.00",
+                    views: "23,560",
+                    icon: glo,
+                  },
+                  {
+                    provider: "airtel",
+                    price: "343,850.00",
+                    views: "23,560",
+                    icon: airtel,
+                  },
+                  {
+                    provider: "mtn",
+                    price: "343,850.00",
+                    views: "23,560",
+                    icon: mtn,
+                  },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -233,11 +256,9 @@ export default function DashboardHome() {
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-white">
                         <img
-                          src={`/placeholder.svg?height=40&width=40`}
+                          src={item.icon}
                           alt={item.provider}
-                          width={40}
-                          height={40}
-                          className="rounded-full"
+                          className="rounded-full h-8 w-8"
                         />
                       </div>
                       <div>

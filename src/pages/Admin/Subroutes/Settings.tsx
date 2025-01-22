@@ -24,6 +24,7 @@ import { ProfileCard } from "@/Global/Profile";
 import { PasswordSettings } from "@/Global/Password";
 import { useState } from "react";
 import { EditProfile } from "@/Global/EditProfile";
+import { AddUserModal } from "@/Global/UserModal";
 
 const users = [
   {
@@ -91,9 +92,7 @@ export default function Settings() {
                     className="pl-8"
                   />
                 </div>
-                <Button className="bg-[#0040FF] hover:bg-[#0040FF]/90">
-                  Add user
-                </Button>
+                <AddUserModal />
               </div>
             </div>
 

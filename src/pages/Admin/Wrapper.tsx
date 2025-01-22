@@ -10,9 +10,9 @@ export default function DashboardWrapper({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen font-inter  w-screen overflow-hidden">
+      <div className="flex h-screen font-inter  w-screen overflow-auto lg:overflow-hidden">
         <Sidebar className="" />
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-hidden">
           <div className="border-b">
             <div className="flex h-16  items-center px-4">
               <div className="flex w-full items-center justify-between ">

@@ -20,15 +20,15 @@ import control_overlay from "@/assets/control_overlay.png";
 import qrcode from "@/assets/qrcode.png";
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen font-inter flex-col">
+    <div className="flex min-h-screen overflow-hidden font-inter flex-col">
       {/* Hero Section */}
       <AnimatedHero />
 
       {/* Features Section */}
-      <section className="bg-[#0F40D3] relative  h-[509px] flex items-center ">
+      <section className="bg-[#0F40D3] py-12 h-[671px] lg:py-0 relative  lg:h-[509px] flex items-center ">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 md:grid-cols-3">
-            <div className="absolute top-0 right-0 ">
+            <div className="absolute hidden lg:block top-0 right-0 ">
               <motion.img
                 src={control}
                 alt="Decorative star"
@@ -198,9 +198,9 @@ export default function LandingPage() {
       </section>
 
       {/* Control Section */}
-      <section className="py-32">
+      <section className="lg:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
+          <div className=" flex flex-col-reverse lg:grid gap-12 lg:grid-cols-2 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -224,7 +224,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="mt-2 text-lg text-gray-600"
+                className="mt-2 text-lg  text-gray-600"
               >
                 Send, receive, and manage payments all in one app.
               </motion.p>
@@ -234,7 +234,7 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="flex flex-col items-start gap-3"
+                  className="flex flex-col bg-[#F4F4F4] lg:bg-transparent p-6 rounded-lg  lg:p-0 items-start gap-3"
                 >
                   <div className="rounded-full">
                     <svg
@@ -251,7 +251,9 @@ export default function LandingPage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Verified Businesses</h3>
+                    <h3 className="font-semibold text-lg ">
+                      Verified Businesses
+                    </h3>
                     <p className="text-sm text-gray-600">
                       Explore verified businesses, available across our
                       platform.
@@ -263,7 +265,7 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="flex flex-col items-start gap-3"
+                  className="flex bg-[#F4F4F4] lg:bg-transparent p-6 lg:p-0 rounded-lg flex-col items-start gap-3"
                 >
                   <div className="rounded-full ">
                     <svg
@@ -293,7 +295,9 @@ export default function LandingPage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Incredible Offers</h3>
+                    <h3 className="font-semibold text-lg ">
+                      Incredible Offers
+                    </h3>
                     <p className="text-sm text-gray-600">
                       Enjoy incredible cashback bonus and loyalty rewards.
                     </p>
@@ -301,8 +305,8 @@ export default function LandingPage() {
                 </motion.div>
               </div>
             </motion.div>
-            <div className="flex justify-center relative">
-              <div className="h-[550px] flex items-end justify-center w-[696px] rounded-2xl bg-gradient-to-b from-[#FBECC7] to-[#B9E99E]">
+            <div className="flex justify-center  relative">
+              <div className="h-[550px] w-full flex items-end justify-center lg:w-[696px] lg:rounded-2xl bg-gradient-to-b from-[#FBECC7] to-[#B9E99E]">
                 <motion.img
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -310,7 +314,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.8, delay: 0.4 }}
                   src={control2}
                   alt="PayNFlex Features"
-                  className="h-[90%] w-[70%] object-cover rounded-2xl transition-all duration-500 ease-out"
+                  className="h-[90%] w-[100%] object-cover rounded-2xl transition-all duration-500 ease-out"
                   style={{
                     opacity: 1,
                     transform: "scale(0.9)",
@@ -325,7 +329,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 1.6 }}
                 src={control_overlay}
                 alt="Decorative overlay"
-                className="absolute -top-10 -right-12 h-[277px] rounded-lg w-auto"
+                className="absolute top-3 right-14 h-[200px] rounded-lg w-auto"
               />
             </div>
           </div>
@@ -338,7 +342,7 @@ export default function LandingPage() {
           <div className="grid gap-12 lg:grid-cols-2">
             <div className="relative order-2 lg:order-1">
               <div className="flex justify-center items-center">
-                <div className="flex overflow-clip h-[496px] w-[550px] items-end justify-center rounded-2xl bg-gradient-to-b from-[#D6E9F7] to-[#A184F3]">
+                <div className="flex overflow-clip h-[496px] w-full lg:w-[550px] items-end justify-center rounded-2xl bg-gradient-to-b from-[#D6E9F7] to-[#A184F3]">
                   <motion.img
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
@@ -346,7 +350,7 @@ export default function LandingPage() {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     src={discover}
                     alt="PayNFlex Features"
-                    className="h-[90%]  w-auto object-cover rounded-2xl transition-all duration-500 ease-out translate-y-[113px]"
+                    className="  lg:h-[90%]  w-auto object-cover  transition-all duration-500 ease-out translate-y-[113px]"
                     style={{
                       opacity: 1,
                       transform: "scale(0.9)",
@@ -362,7 +366,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 src={discover_cylinder}
                 alt="Decorative cylinder"
-                className="absolute -top-8 -left-4 h-[156.2px] w-auto"
+                className="absolute -top-12 -top-16  lg:-top-8 lg:-left-4 h-[120px] lg:h-[156.2px] w-auto"
               />
               <motion.img
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -371,7 +375,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.8 }}
                 src={discover_overlay}
                 alt="Decorative overlay"
-                className="absolute top-4 -right-8 h-[57px] rounded-lg w-[300px]"
+                className="absolute hidden lg:block top-4 -right-8 h-[57px] rounded-lg w-full lg:w-[300px]"
               />
             </div>
             <div className="order-1 flex justify-center flex-col lg:order-2">
@@ -384,14 +388,12 @@ export default function LandingPage() {
                 SME Hub on PayNFlex lets you discover incredible businesses with
                 amazing offers around you.
               </p>
-              <div className="mt-8 flex gap-4">
-                <Link to="#">
+              <div className="mt-8 mx-auto lg:m-0  lg:flex-row gap-4">
+                <Link className="" to="#">
                   <img
                     src={app_store}
                     alt="Download on App Store"
-                    width={120}
-                    height={40}
-                    className="h-16 w-auto"
+                    className="h-16 mb-4 w-auto"
                   />
                 </Link>
                 <Link to="#">
@@ -470,11 +472,11 @@ export default function LandingPage() {
       </section>
 
       {/* Download Section */}
-      <section className="bg-black items-center justify-center  text-white flex flex-col">
-        <div className="w-full max-w-screen-xl flex justify-end">
+      <section className="bg-black relative items-center justify-center  text-white flex flex-col">
+        <div className="w-full top-6 absolute lg:relative max-w-screen-xl flex justify-end">
           <img src={star} className="h-[130px] " />
         </div>
-        <div className="mx-auto py-12   flex items-center justify-center flex-col max-w-screen-2xl w-full px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto py-12 hidden lg:flex items-center justify-center flex-col max-w-screen-2xl w-full px-4 sm:px-6 lg:px-8">
           <div className="text-start flex flex-col items-start">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-5xl">
               Experience smarter,
@@ -593,7 +595,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-black w-full flex   py-16 text-gray-400">
         <div className="mx-auto max-w-screen-2xl w-full px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4">
+          <div className="w-full  py-4">
             <svg
               width="184"
               height="44"
@@ -636,7 +638,7 @@ export default function LandingPage() {
             </svg>
           </div>
 
-          <div className="grid gap-8  justify-items-center  sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-8   lg:justify-items-center  sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <div className="flex flex-col space-y-4">
                 <div>

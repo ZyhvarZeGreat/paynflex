@@ -45,7 +45,7 @@ export default function AnimatedHero() {
         />
       </div>
       <div className="mx-auto w-full flex flex-col max-w-screen-xl relative z-10">
-        <div className="w-full pb-8">
+        <div className="w-full lg:pb-8">
           <img
             src={home_logo}
             alt="PayNFlex Logo"
@@ -88,7 +88,15 @@ export default function AnimatedHero() {
             >
               Make payments effortlessly - simple, secure, and fast.
             </motion.p>
-            <div className="mt-4 self-start mb-32 flex gap-4">
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4, duration: 0.5 }}
+              className=" my-12 lg:mt-8 w-full rounded-full bg-gradient-to-r from-[#0F40D3] to-[#0B106E] px-6 py-4 text-center text-base font-medium text-white hover:opacity-90"
+            >
+              Get the app
+            </motion.button>
+            <div className="mt-4 hidden self-start mb-32 lg:flex gap-4">
               <Link
                 to="#"
                 className="rounded-lg text-sm font-medium text-blue-600 hover:bg-blue-50"
@@ -108,7 +116,7 @@ export default function AnimatedHero() {
               </Link>
             </div>
           </div>
-          <div className="relative h-[600px] flex  justify-end  w-full">
+          <div className="relative h-[300px] lg:h-[600px] flex  justify-end  w-full">
             {/* Left Phone */}
             <div
               className={`absolute left-1/2 top-1/2 -translate-x-[85%] -translate-y-1/2 transition-all duration-1000

@@ -2,15 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -25,7 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Settings, MoreVertical } from "lucide-react";
+import { MoreVertical } from "lucide-react";
+import { AddRoleModal } from "./RolesModal";
+import { AddPermissionModal } from "./PermissionsModal";
 
 interface Role {
   name: string;
@@ -48,55 +41,8 @@ export default function RolesAndPermissions() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Roles and Permissions</h1>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            Manage permissions
-          </Button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Add role</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Role</DialogTitle>
-                <DialogDescription>
-                  Create a new role and assign permissions. This will allow you
-                  to manage access levels for different users.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="roleName" className="text-right">
-                    Role name
-                  </label>
-                  <input
-                    id="roleName"
-                    className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Enter role name"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="permissions" className="text-right">
-                    Permissions
-                  </label>
-                  <select
-                    id="permissions"
-                    className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    multiple
-                  >
-                    <option value="read">Read</option>
-                    <option value="write">Write</option>
-                    <option value="delete">Delete</option>
-                    <option value="manage">Manage Users</option>
-                  </select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline">Cancel</Button>
-                <Button>Save role</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <AddPermissionModal />
+          <AddRoleModal />
         </div>
       </div>
 
@@ -123,14 +69,15 @@ export default function RolesAndPermissions() {
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent
+                      className="font-inter  text-lg w-[200px] flex items-start justify-center flex-col h-[130px]"
+                      align="end"
+                    >
                       <DropdownMenuItem>Edit role</DropdownMenuItem>
+                      <DropdownMenuSeparator className="w-full" />
                       <DropdownMenuItem>Manage permissions</DropdownMenuItem>
+                      <DropdownMenuSeparator className="w-full" />
                       <DropdownMenuItem>View users</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600">
-                        Delete role
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

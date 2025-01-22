@@ -276,9 +276,6 @@ export default function Transaction() {
           </Select>
         </div>
         <div className="relative">
-          <div className="absolute left-1/2 top-20 -translate-x-1/2 rounded-full bg-[#0D8BFA] px-4 py-2 text-sm text-black">
-            343,850 transactions
-          </div>
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart

@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/Auth/LoginPage";
 import Home from "./pages/Home/Home";
 // import { RequireAuth } from "./Global/Require_Auth";
 import DashboardWrapper from "./pages/Admin/Wrapper";
@@ -11,13 +10,16 @@ import User from "./pages/Admin/Subroutes/User";
 import Transactions from "./pages/Admin/Subroutes/Transactions";
 // import { AuthProvider } from "./hooks/useAuth";
 import Dashboard_Home from "./pages/Admin/Subroutes/Dashboard-Home";
+import Register from "./pages/Auth/Register";
+import Login from "./pages/Auth/Login";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/admin"
           element={

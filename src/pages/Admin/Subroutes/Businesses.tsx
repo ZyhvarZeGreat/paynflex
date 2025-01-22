@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
+import { AddBusinessModal } from "@/Global/BusinessModal";
 
 const businesses = Array(6).fill({
   name: "The book hub",
@@ -177,7 +178,7 @@ export default function Businesses() {
   return (
     <div className="min-h-screen  ">
       {/* Metrics Grid */}
-      <div className="mb-8 grid border px-6 h-[250px] border-y-[#E0E2E780]  sm:grid-cols-2 lg:grid-cols-2">
+      <div className="mb-8 grid border px-6 lg:h-[250px] border-y-[#E0E2E780]  sm:grid-cols-2 lg:grid-cols-2">
         {metrics.map((metric, index) => (
           <Card
             key={index}
@@ -220,9 +221,7 @@ export default function Businesses() {
           <Button variant="outline" className="text-black">
             Promote business
           </Button>
-          <Button className="bg-white text-black hover:bg-white/90">
-            Add business
-          </Button>
+          <AddBusinessModal />
         </div>
       </div>
 

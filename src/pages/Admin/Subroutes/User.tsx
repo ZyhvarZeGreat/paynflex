@@ -175,7 +175,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 export default function User() {
   return (
-    <div className=" text-black  p-6">
+    <div className=" text-black overflow-hidden  p-6">
       {/* Metrics Grid */}
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric, index) => (

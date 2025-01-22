@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   MoreVertical,
   Eye,
-  Plus,
   Smartphone,
   ArrowDownToLine,
   PlaySquare,
@@ -19,6 +18,7 @@ import airtel from "@/assets/telco icons/airtel.png";
 import mtn from "@/assets/telco icons/mtn.png";
 import glo from "@/assets/telco icons/glo.png";
 import etisalat from "@/assets/telco icons/9mobile.png";
+import { AddProductModal } from "@/Global/ProductsModal";
 const products = [
   {
     title: "2.5GB all time + 4GB night",
@@ -201,10 +201,7 @@ export default function ProductDashboard() {
 
         {/* Add Product Button */}
         <div className="mb-6 flex justify-end">
-          <Button variant="outline" className="gap-2 text-black">
-            <Plus className="h-4 w-4" />
-            Add product
-          </Button>
+          <AddProductModal />
         </div>
 
         {/* Products Grid */}
