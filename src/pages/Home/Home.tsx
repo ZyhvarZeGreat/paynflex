@@ -199,14 +199,14 @@ export default function LandingPage() {
 
       {/* Control Section */}
       <section className="lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className=" flex flex-col-reverse lg:grid gap-12 lg:grid-cols-2 items-center">
+        <div className="mx-auto max-w-7xl sm:px-4 md:px-6 lg:px-8">
+          <div className="  flex flex-col-reverse lg:grid gap-12 lg:grid-cols-2 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="flex flex-col items-start"
+              className="flex px-4 lg:px-0 flex-col items-start"
             >
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -338,11 +338,11 @@ export default function LandingPage() {
 
       {/* Discover Section */}
       <section className=" py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl p-0 sm:px-4 md:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2">
             <div className="relative order-2 lg:order-1">
               <div className="flex justify-center items-center">
-                <div className="flex overflow-clip h-[496px] w-full lg:w-[550px] items-end justify-center rounded-2xl bg-gradient-to-b from-[#D6E9F7] to-[#A184F3]">
+                <div className="flex overflow-clip h-[496px] w-full lg:w-[550px] items-end justify-center lg:rounded-2xl bg-gradient-to-b from-[#D6E9F7] to-[#A184F3]">
                   <motion.img
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
@@ -378,7 +378,7 @@ export default function LandingPage() {
                 className="absolute hidden lg:block top-4 -right-8 h-[57px] rounded-lg w-full lg:w-[300px]"
               />
             </div>
-            <div className="order-1 flex justify-center flex-col lg:order-2">
+            <div className="order-1 px-4 lg:px-0 flex justify-center flex-col lg:order-2">
               <h2 className="text-3xl font-semibold tracking-tight sm:text-5xl">
                 Discover businesses
                 <br />
