@@ -92,7 +92,7 @@ export default function AnimatedHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.4, duration: 0.5 }}
-              className=" my-12 lg:mt-8 w-full rounded-full bg-gradient-to-r from-[#0F40D3] to-[#0B106E] px-6 py-4 text-center text-base font-medium text-white hover:opacity-90"
+              className=" my-12 lg:hidden block lg:mt-8 w-full rounded-full bg-gradient-to-r from-[#0F40D3] to-[#0B106E] px-6 py-4 text-center text-base font-medium text-white hover:opacity-90"
             >
               Get the app
             </motion.button>

@@ -314,7 +314,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.8, delay: 0.4 }}
                   src={control2}
                   alt="PayNFlex Features"
-                  className="h-[90%] w-[100%] object-cover rounded-2xl transition-all duration-500 ease-out"
+                  className="h-[100%] lg:h-[90%] w-[100%] lg:w-[90%] object-cover rounded-2xl transition-all duration-500 ease-out"
                   style={{
                     opacity: 1,
                     transform: "scale(0.9)",
@@ -329,7 +329,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 1.6 }}
                 src={control_overlay}
                 alt="Decorative overlay"
-                className="absolute top-3 right-14 h-[200px] rounded-lg w-auto"
+                className="absolute top-2 lg:-top-16 -right-12 lg:-right-16 h-[200px] lg:h-[277px] rounded-lg w-auto"
               />
             </div>
           </div>
@@ -339,7 +339,7 @@ export default function LandingPage() {
       {/* Discover Section */}
       <section className=" py-16">
         <div className="mx-auto max-w-7xl p-0 sm:px-4 md:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2">
+          <div className=" flex flex-col-reverse lg:grid gap-12 lg:grid-cols-2">
             <div className="relative order-2 lg:order-1">
               <div className="flex justify-center items-center">
                 <div className="flex overflow-clip h-[496px] w-full lg:w-[550px] items-end justify-center lg:rounded-2xl bg-gradient-to-b from-[#D6E9F7] to-[#A184F3]">
@@ -366,7 +366,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 src={discover_cylinder}
                 alt="Decorative cylinder"
-                className="absolute -top-12 -top-16  lg:-top-8 lg:-left-4 h-[120px] lg:h-[156.2px] w-auto"
+                className="absolute -left-24 -top-16  lg:-top-8 lg:-left-4 h-[220px] lg:h-[156.2px] w-auto"
               />
               <motion.img
                 initial={{ opacity: 0, scale: 0.8 }}
