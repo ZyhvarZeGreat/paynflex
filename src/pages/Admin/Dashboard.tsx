@@ -8,11 +8,15 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router";
 import { useLocation } from "react-router";
 // import React from "react";
 import logo from "@/assets/logo-signup.png";
+import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 const menuItems = [
   {
     icon: (
@@ -127,11 +131,14 @@ const menuItems = [
 
 export function Dashboard() {
   const pathname = useLocation().pathname;
-
+  const navigate = useNavigate();
   return (
     <ShadcnSidebar className="font-inter">
       <SidebarHeader className=" mt-6">
-        <Button variant="ghost" className="w-full justify-start">
+        <Button
+          variant="ghost"
+          className="w-full hover:bg-transparent justify-start"
+        >
           <img className="h-[32px] w-auto" src={logo} />
         </Button>
       </SidebarHeader>
@@ -142,7 +149,7 @@ export function Dashboard() {
               <div className="relative">
                 <div
                   className={cn(
-                    "absolute h-[50px] w-[0%] rounded-lg bg-gradient-to-r from-[#2B3446] to-[#36353D] transition-transform duration-300",
+                    "absolute h-[50px] w-[90%] left-2 rounded-lg bg-gradient-to-r from-[#2B3446] to-[#36353D] transition-transform duration-300",
                     pathname.includes(item.href) ? "opacity-100" : "opacity-0"
                   )}
                   style={{
@@ -168,6 +175,23 @@ export function Dashboard() {
           ))}
         </SidebarMenu>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu className="text-white">
+          <SidebarMenuItem>
+            <Button
+              onClick={() => {
+                document.cookie =
+                  "token=; max-age=0; path=/; Secure; SameSite=Strict";
+                navigate("/login");
+              }}
+              className="w-full bg-transparent text-white hover:bg-white/10 justify-start"
+            >
+              <LogOut />
+              Logout
+            </Button>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </ShadcnSidebar>
   );
 }
