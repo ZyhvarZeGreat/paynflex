@@ -2,10 +2,9 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
+import { useState, useEffect } from "react";
 import {
   MoreVertical,
-  Eye,
   Smartphone,
   ArrowDownToLine,
   PlaySquare,
@@ -14,53 +13,8 @@ import {
 } from "lucide-react";
 // import Image from "next/image"
 import { Link } from "react-router";
-import airtel from "@/assets/telco icons/airtel.png";
-import mtn from "@/assets/telco icons/mtn.png";
-import glo from "@/assets/telco icons/glo.png";
-import etisalat from "@/assets/telco icons/9mobile.png";
 import { AddProductModal } from "@/Global/ProductsModal";
-const products = [
-  {
-    title: "2.5GB all time + 4GB night",
-    price: "343,850.00",
-    views: "23,560",
-    provider: "9mobile",
-    img: etisalat,
-    badge: "₦1500",
-  },
-  {
-    title: "2.5GB all time + 4GB night",
-    price: "343,850.00",
-    views: "23,560",
-    provider: "glo",
-    img: glo,
-    badge: "₦1500",
-  },
-  {
-    title: "2.5GB all time + 4GB night",
-    price: "343,850.00",
-    views: "23,560",
-    provider: "airtel",
-    img: airtel,
-    badge: "₦1500",
-  },
-  {
-    title: "2.5GB all time + 4GB night",
-    price: "343,850.00",
-    views: "23,560",
-    provider: "mtn",
-    img: mtn,
-    badge: "₦1500",
-  },
-  {
-    title: "2.5GB all time + 4GB night",
-    price: "343,850.00",
-    views: "23,560",
-    provider: "mtn",
-    img: mtn,
-    badge: "₦1500",
-  },
-];
+import { getProducts, ProductData } from "@/services/product";
 
 const categories = [
   {
@@ -92,6 +46,27 @@ const categories = [
 ];
 
 export default function ProductDashboard() {
+  const [products, setProducts] = useState<ProductData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getProducts();
+      console.log(response.data);
+      setProducts(response.data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
     <div className="grid grid-cols-12  min-h-screen ">
       <div className=" col-span-12 lg:col-span-8 p-6">
@@ -130,7 +105,9 @@ export default function ProductDashboard() {
             </div>
             <div className="space-y-1">
               <div className="text-sm text-black">Products</div>
-              <div className="text-xl font-bold text-black">65</div>
+              <div className="text-xl font-bold text-black">
+                {products.length}
+              </div>
             </div>
           </div>
           <div className=" px-6 flex justify-center flex-col">
@@ -201,11 +178,11 @@ export default function ProductDashboard() {
 
         {/* Add Product Button */}
         <div className="mb-6 flex justify-end">
-          <AddProductModal />
+          <AddProductModal onProductAdded={fetchProducts} />
         </div>
 
         {/* Products Grid */}
-        <div className="grid border border-[#E0E2E780] rounded-xl  md:grid-cols-2">
+        <div className="grid border border-[#E0E2E780] rounded-xl grid-cols-1  md:grid-cols-2">
           {/* Recently Added Section */}
           <div className="   ">
             <div className=" pl-4 py-4 border-b border-r border-r-[#E0E2E780] border-b-[#E0E2E780] flex items-center justify-between">
@@ -214,35 +191,81 @@ export default function ProductDashboard() {
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-4 px-4">
-              {products.map((product, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between rounded-lg p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-white">
-                      <img
-                        src={`${product.img}`}
-                        alt={product.provider}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
+            <div className="space-y-4 overflow-y-scroll px-4">
+              {isLoading ? (
+                <div>
+                  {" "}
+                  <div className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 text-black"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span className="ml-2">Loading products...</span>
+                  </div>
+                </div>
+              ) : error ? (
+                <div>Error: {error}</div>
+              ) : (
+                products.map((product, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg bg-gray-50 p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-white">
+                        <img
+                          src={product.images}
+                          alt={product.name}
+                          className="rounded-full h-8 w-8"
+                        />
+                      </div>
+                      <div>
+                        <div className="font-medium">{product.name}</div>
+                        <div className="text-sm flex items-center gap-2 text-gray-600">
+                          <p>₦343,850.00</p>
+                          <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                          <div className="flex gap-1 items-center">
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 14 14"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M6.43334 13.6673C6.26668 13.6673 6.10001 13.634 5.93334 13.5673C5.76668 13.5007 5.61668 13.4007 5.48334 13.2673L0.716677 8.50065C0.583343 8.36732 0.486121 8.2201 0.42501 8.05898C0.363899 7.89787 0.333344 7.73398 0.333344 7.56732C0.333344 7.40065 0.363899 7.23398 0.42501 7.06732C0.486121 6.90065 0.583343 6.75065 0.716677 6.61732L6.58334 0.733984C6.70557 0.611762 6.85001 0.51454 7.01668 0.442318C7.18334 0.370095 7.35557 0.333984 7.53334 0.333984H12.3167C12.6833 0.333984 12.9972 0.46454 13.2583 0.725651C13.5195 0.986762 13.65 1.30065 13.65 1.66732V6.45065C13.65 6.62843 13.6167 6.79787 13.55 6.95898C13.4833 7.1201 13.3889 7.26176 13.2667 7.38398L7.38334 13.2673C7.25001 13.4007 7.10001 13.5007 6.93334 13.5673C6.76668 13.634 6.60001 13.6673 6.43334 13.6673ZM6.43334 12.334L12.3167 6.43398V1.66732H7.55001L1.66668 7.56732L6.43334 12.334ZM10.65 4.33398C10.9278 4.33398 11.1639 4.23676 11.3583 4.04232C11.5528 3.84787 11.65 3.61176 11.65 3.33398C11.65 3.05621 11.5528 2.8201 11.3583 2.62565C11.1639 2.43121 10.9278 2.33398 10.65 2.33398C10.3722 2.33398 10.1361 2.43121 9.94168 2.62565C9.74723 2.8201 9.65001 3.05621 9.65001 3.33398C9.65001 3.61176 9.74723 3.84787 9.94168 4.04232C10.1361 4.23676 10.3722 4.33398 10.65 4.33398Z"
+                                fill="#181D27"
+                                fill-opacity="0.45"
+                              />
+                            </svg>
+
+                            <p>23,560</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium text-black">
-                        {product.title}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-black">
-                        ₦{product.price} • <Eye className="h-4 w-4" />{" "}
-                        {product.views}
-                      </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      ₦{product.price}
                     </div>
                   </div>
-                  <div className="text-sm text-black">{product.badge}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -254,35 +277,81 @@ export default function ProductDashboard() {
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-4 border-l border-l-[#E0E2E780]  px-4  ">
-              {products.map((product, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between rounded-lg p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-white">
-                      <img
-                        src={`${product.img}`}
-                        alt={product.provider}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
+            <div className="space-y-4 border-l overflow-y-scroll border-l-[#E0E2E780]  px-4  ">
+              {isLoading ? (
+                <div>
+                  {" "}
+                  <div className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 text-black"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span className="ml-2">Loading products...</span>
+                  </div>
+                </div>
+              ) : error ? (
+                <div>Error: {error}</div>
+              ) : (
+                products.map((product, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg bg-gray-50 p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-white">
+                        <img
+                          src={product.images}
+                          alt={product.name}
+                          className="rounded-full h-8 w-8"
+                        />
+                      </div>
+                      <div>
+                        <div className="font-medium">{product.name}</div>
+                        <div className="text-sm flex items-center gap-2 text-gray-600">
+                          <p>₦343,850.00</p>
+                          <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                          <div className="flex gap-1 items-center">
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 14 14"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M6.43334 13.6673C6.26668 13.6673 6.10001 13.634 5.93334 13.5673C5.76668 13.5007 5.61668 13.4007 5.48334 13.2673L0.716677 8.50065C0.583343 8.36732 0.486121 8.2201 0.42501 8.05898C0.363899 7.89787 0.333344 7.73398 0.333344 7.56732C0.333344 7.40065 0.363899 7.23398 0.42501 7.06732C0.486121 6.90065 0.583343 6.75065 0.716677 6.61732L6.58334 0.733984C6.70557 0.611762 6.85001 0.51454 7.01668 0.442318C7.18334 0.370095 7.35557 0.333984 7.53334 0.333984H12.3167C12.6833 0.333984 12.9972 0.46454 13.2583 0.725651C13.5195 0.986762 13.65 1.30065 13.65 1.66732V6.45065C13.65 6.62843 13.6167 6.79787 13.55 6.95898C13.4833 7.1201 13.3889 7.26176 13.2667 7.38398L7.38334 13.2673C7.25001 13.4007 7.10001 13.5007 6.93334 13.5673C6.76668 13.634 6.60001 13.6673 6.43334 13.6673ZM6.43334 12.334L12.3167 6.43398V1.66732H7.55001L1.66668 7.56732L6.43334 12.334ZM10.65 4.33398C10.9278 4.33398 11.1639 4.23676 11.3583 4.04232C11.5528 3.84787 11.65 3.61176 11.65 3.33398C11.65 3.05621 11.5528 2.8201 11.3583 2.62565C11.1639 2.43121 10.9278 2.33398 10.65 2.33398C10.3722 2.33398 10.1361 2.43121 9.94168 2.62565C9.74723 2.8201 9.65001 3.05621 9.65001 3.33398C9.65001 3.61176 9.74723 3.84787 9.94168 4.04232C10.1361 4.23676 10.3722 4.33398 10.65 4.33398Z"
+                                fill="#181D27"
+                                fill-opacity="0.45"
+                              />
+                            </svg>
+
+                            <p>23,560</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium text-black">
-                        {product.title}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-black">
-                        ₦{product.price} • <Eye className="h-4 w-4" />{" "}
-                        {product.views}
-                      </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      ₦{product.price}
                     </div>
                   </div>
-                  <div className="text-sm text-black">{product.badge}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>

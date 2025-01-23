@@ -4,12 +4,55 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { changePassword } from "@/services/password";
 
 export function PasswordSettings() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { toast } = useToast();
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "New password and confirm password must match",
+        className: "bg-red-500 text-white font-inter",
+      });
+      return;
+    }
+
+    try {
+      await changePassword({
+        currentPassword,
+        newPassword,
+      });
+
+      toast({
+        title: "Password updated successfully",
+        description: "Your password has been changed",
+        className: "bg-green-500 text-white font-inter",
+      });
+
+      // Reset form
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      toast({
+        title: "Failed to update password",
+        description:
+          error.message || "An error occurred while updating password",
+        className: "bg-red-500 text-white font-inter",
+      });
+    }
+  };
   return (
     <div className="space-y-6">
       <div>
@@ -110,7 +153,15 @@ export function PasswordSettings() {
               <Button className="bg-[#F1F2F4]" variant="outline">
                 Cancel
               </Button>
-              <Button className="bg-[#0F40D3]"> Save changes</Button>
+              <Button
+                onClick={(e) => {
+                  handleSubmit(e);
+                }}
+                className="bg-[#0F40D3]"
+              >
+                {" "}
+                Save changes
+              </Button>
             </div>
           </div>
         </div>

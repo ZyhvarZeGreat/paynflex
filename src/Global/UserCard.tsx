@@ -5,25 +5,52 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { register, RegisterData } from "@/services/register";
+import { useToast } from "@/hooks/use-toast";
 
-interface UserFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-}
+export default function UserCard({
+  setOpen,
+}: {
+  setOpen: (open: boolean) => void;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-export default function UserCard() {
-  const [formData, setFormData] = useState<UserFormData>({
+  const [formData, setFormData] = useState<RegisterData>({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
+    password: "",
+    roleId: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    setIsLoading(true);
+
+    try {
+      await register({
+        ...formData,
+        roleId: "679173f5d2930ac4671e0f4e",
+        password: "admin",
+      });
+      toast({
+        title: "Operation successful",
+        description: "User created successfully",
+        className: "bg-green-500 text-white font-inter",
+      });
+      setOpen(false);
+    } catch (error) {
+      toast({
+        title: "Operation failed",
+        description: "Failed to create user",
+        className: "bg-red-500 text-white font-inter",
+      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -91,8 +118,12 @@ export default function UserCard() {
             />
           </div>
 
-          <Button type="submit" className="w-full h-12 text-base mt-24">
-            Add user
+          <Button
+            type="submit"
+            className="w-full h-12 text-base mt-24"
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating..." : "Add user"}
           </Button>
         </form>
       </div>

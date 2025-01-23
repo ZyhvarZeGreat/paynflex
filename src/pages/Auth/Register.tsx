@@ -19,21 +19,22 @@ import logo_login from "@/assets/logo-login.png";
 import { register } from "@/services/register";
 import { requestOTP } from "@/services/verify";
 import { InputOTPComponent } from "@/Global/OTP";
-
+import { useToast } from "@/hooks/use-toast";
 export default function Register() {
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [scene, setScene] = useState<"login" | "verify" | "reset">("login");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [scene, setScene] = useState<"register" | "verify" | "reset">(
+    "register"
+  );
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // await register({
-    //   email: email,
-    //   password: password,
-    //   phone_number: "07082749179",
-    // });
+
     console.log("Login submitted");
 
     navigate("/dashboard");
@@ -57,6 +58,44 @@ export default function Register() {
       opacity: 1,
     },
   };
+  const handleRegister = async () => {
+    register({
+      email: email,
+      password: password,
+      firstName: fullName.split(" ")[0],
+      lastName: fullName.split(" ")[1],
+      phoneNumber: phoneNumber,
+      roleId: "679173f5d2930ac4671e0f4e",
+    })
+      .then(() => {
+        toast({
+          title: "User Registered Successfully",
+        });
+        requestOTP({
+          identifier: email,
+          method: "email",
+        }).then(() => {
+          // setScene("verify");
+          navigate("/auth/login");
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error?.status === 409) {
+          toast({
+            title: "User already registered",
+            description: "Please verify the OTP sent to your email",
+          });
+          setScene("verify");
+        } else {
+          toast({
+            title: "Registration failed",
+            description: error?.message || "An unexpected error occurred",
+            variant: "destructive",
+          });
+        }
+      });
+  };
 
   return (
     <div
@@ -64,7 +103,7 @@ export default function Register() {
       className={`min-h-screen bg-[#4645B0]  font-inter  flex items-center justify-center bg-cover bg-center bg-no-repeat`}
     >
       {/* <div className="absolute inset-0 "></div> */}
-      {scene === "login" && (
+      {scene === "register" && (
         <motion.div
           initial="hidden"
           animate="visible"
@@ -86,8 +125,21 @@ export default function Register() {
                 </CardDescription>
               </motion.div>
             </CardHeader>
-            <CardContent className="h-[300px] w-[420px]">
+            <CardContent className="h-[460px] w-[420px]">
               <form onSubmit={handleSubmit} className="space-y-4">
+                <motion.div variants={itemVariants} className="space-y-2">
+                  <Label className="text-[#414651] text-sm" htmlFor="email">
+                    Full Name
+                  </Label>
+                  <Input
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </motion.div>
                 <motion.div variants={itemVariants} className="space-y-2">
                   <Label className="text-[#414651] text-sm" htmlFor="email">
                     Email
@@ -98,6 +150,20 @@ export default function Register() {
                     id="email"
                     type="email"
                     placeholder="Enter your email"
+                    required
+                  />
+                </motion.div>
+                <motion.div variants={itemVariants} className="space-y-2">
+                  <Label className="text-[#414651] text-sm" htmlFor="email">
+                    Phone Number
+                  </Label>
+                  <Input
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    id="phone_number"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Enter Phone number"
                     required
                   />
                 </motion.div>
@@ -139,23 +205,12 @@ export default function Register() {
                   <Button
                     onClick={(e) => {
                       e.preventDefault();
-                      register({
-                        email: email,
-                        password: password,
-                        phoneNumber: "07082749179",
-                      }).then(() => {
-                        requestOTP({
-                          identifier: email,
-                          method: "email",
-                        }).then(() => {
-                          setScene("verify");
-                        });
-                      });
+                      handleRegister();
                     }}
                     // type="submit"
                     className="w-full bg-[#222375] "
                   >
-                    Login
+                    Register
                   </Button>
                 </motion.div>
               </form>
@@ -169,7 +224,7 @@ export default function Register() {
           animate="visible"
           variants={containerVariants}
         >
-          <InputOTPComponent />
+          <InputOTPComponent email={email} requestOTP={requestOTP} />
         </motion.div>
       )}
     </div>

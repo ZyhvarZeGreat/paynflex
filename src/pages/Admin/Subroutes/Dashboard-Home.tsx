@@ -16,18 +16,17 @@ import glo from "@/assets/telco icons/glo.png";
 import airtel from "@/assets/telco icons/airtel.png";
 import etisalat from "@/assets/telco icons/9mobile.png";
 import mtn from "@/assets/telco icons/mtn.png";
-// Sample data for the charts
-const dailyData = Array.from({ length: 31 }, (_, i) => ({
-  day: i + 1,
-  amount: Math.random() * 400000,
-  isHighlight: i === 12,
-}));
-
-const verificationData = Array.from({ length: 20 }, () => ({
-  value: Math.random() * 100,
-}));
 
 export default function DashboardHome() {
+  const dailyData = Array.from({ length: 31 }, (_, i) => ({
+    day: i + 1,
+    amount: Math.random() * 400000,
+    isHighlight: i === 12,
+  }));
+  const verificationData = Array.from({ length: 20 }, () => ({
+    value: Math.random() * 100,
+  }));
+
   return (
     <div className=" p-4 lg:p-6">
       <div className="flex flex-col gap-6 ">

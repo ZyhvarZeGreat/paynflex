@@ -1,9 +1,12 @@
 import axios, { AxiosError } from "axios";
 
-interface RegisterData {
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
   email: string;
-  password: string;
   phoneNumber: string;
+  password: string;
+  roleId: string;
 }
 
 interface ApiError {
@@ -14,7 +17,7 @@ interface ApiError {
 export const register = async (data: RegisterData) => {
   try {
     const response = await axios.post(
-      "https://paynflex.onrender.com/v1/auth/register",
+      "https://paynflex-k360.onrender.com/v1/auth/admin/create",
       data,
       {
         headers: {

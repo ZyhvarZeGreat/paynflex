@@ -1,24 +1,42 @@
 "use client";
 
 import { useState } from "react";
-
 import { Input } from "@/components/ui/input";
-
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { createRole } from "@/services/role";
+import { AxiosError } from "axios";
+import { useToast } from "@/hooks/use-toast";
 
-export default function RoleCard() {
+export default function RoleCard({ onSuccess }: { onSuccess: () => void }) {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    price: "0.00",
-    allowUserAmount: false,
-    category: "",
-    image: null as File | null,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    setLoading(true);
+    try {
+      await createRole(formData);
+      toast({
+        title: "Success",
+        description: "Role created successfully",
+        className: "bg-green-500 text-white font-inter",
+      });
+      onSuccess();
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to create role",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,7 +53,7 @@ export default function RoleCard() {
               What do you want to call this role?
             </Label>
             <Input
-              placeholder="e.g 5MB Data for 2 weeks"
+              placeholder="Support"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -44,8 +62,12 @@ export default function RoleCard() {
             />
           </div>
 
-          <Button type="submit" className="w-full h-12 m text-base">
-            Add product
+          <Button
+            type="submit"
+            className="w-full h-12 m text-base"
+            disabled={loading}
+          >
+            {loading ? "Creating..." : "Add role"}
           </Button>
         </form>
       </div>

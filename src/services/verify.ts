@@ -13,7 +13,7 @@ interface ApiError {
 export const requestOTP = async (data: RequestOTP) => {
   try {
     const response = await axios.post(
-      "https://paynflex.onrender.com/v1/auth/forget-password",
+      "https://paynflex-k360.onrender.com/v1/auth/forget-password",
       data,
       {
         headers: {
@@ -45,6 +45,51 @@ export const requestOTP = async (data: RequestOTP) => {
     // Generic error handling
     throw {
       message: "An unexpected error occurred during password reset request",
+      status: 500,
+    };
+  }
+};
+
+interface VerifyOTP {
+  email: string;
+  otp: string;
+}
+
+export const verifyOTP = async (data: VerifyOTP) => {
+  try {
+    const response = await axios.post(
+      "https://paynflex-k360.onrender.com/v1/auth/verify-email",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiError>;
+      if (axiosError.response) {
+        // Server responded with error status
+        throw {
+          message:
+            axiosError.response.data.message || "OTP verification failed",
+          status: axiosError.response.status,
+        };
+      } else if (axiosError.request) {
+        // Request made but no response received
+        throw {
+          message:
+            "No response from server. Please check your internet connection.",
+          status: 500,
+        };
+      }
+    }
+    // Generic error handling
+    throw {
+      message: "An unexpected error occurred during OTP verification",
       status: 500,
     };
   }

@@ -9,7 +9,7 @@ export function ProfileCard(props: {
 }) {
   const { setScene } = props;
   return (
-    <Card className="w-full max-w-sm overflow-hidden">
+    <Card className=" mx-auto rounded-xl h-[364px] w-[360px]  overflow-hidden">
       <div className="h-32 bg-gradient-to-r from-yellow-100 to-blue-100" />
       <div className="p-6">
         <div className="flex justify-between items-start mb-6">

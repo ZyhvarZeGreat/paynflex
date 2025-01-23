@@ -13,7 +13,7 @@ interface ApiError {
 export const login = async (data: LoginData) => {
   try {
     const response = await axios.post(
-      "https://paynflex.onrender.com/v1/auth/login",
+      "https://paynflex-k360.onrender.com/v1/auth/login",
       data,
       {
         headers: {

@@ -19,23 +19,36 @@ import {
 import { MoreVertical } from "lucide-react";
 import { AddRoleModal } from "./RolesModal";
 import { AddPermissionModal } from "./PermissionsModal";
-
+import { getRoles } from "@/services/role";
+import { useEffect, useState } from "react";
 interface Role {
   name: string;
   permissions: number;
   users: number;
 }
 
-const roles: Role[] = [
-  { name: "Admin", permissions: 5, users: 1 },
-  { name: "Manager", permissions: 8, users: 3 },
-  { name: "Tech Lead", permissions: 12, users: 2 },
-  { name: "Customer Support", permissions: 4, users: 8 },
-  { name: "Developer", permissions: 5, users: 3 },
-  { name: "Operations", permissions: 8, users: 4 },
-];
+interface RoleResponse {
+  name: string;
+  permissions: number;
+  users: number;
+}
+
+const fetchRoles = async (): Promise<Role[]> => {
+  const response = await getRoles();
+  console.log(response);
+  return response.data.map((role: RoleResponse) => ({
+    name: role.name,
+    permissions: "Full Access",
+    users: 5,
+  }));
+};
 
 export default function RolesAndPermissions() {
+  const [roles, setRoles] = useState<Role[]>([]);
+  useEffect(() => {
+    fetchRoles().then((roles) => setRoles(roles));
+  }, []);
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">

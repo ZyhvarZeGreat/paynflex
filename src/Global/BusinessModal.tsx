@@ -21,24 +21,43 @@ import {
   DialogTrigger,
   DialogOverlay,
 } from "@/components/ui/dialog";
+import { BusinessData, createBusiness } from "@/services/business";
+import { toast } from "@/hooks/use-toast";
 
-interface BusinessFormData {
-  name: string;
-  description: string;
-  address: string;
-  category: string;
-  images: File[];
-}
-
-export function AddBusinessModal() {
+export function AddBusinessModal({
+  onBusinessAdded,
+}: {
+  onBusinessAdded?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<BusinessFormData>({
+  const [formData, setFormData] = useState<BusinessData>({
     name: "",
     description: "",
     address: "",
     category: "",
-    images: [],
+    image: null,
   });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setFormData((prev) => ({
+        ...prev,
+        image: e.target.files![0],
+      }));
+    }
+  };
 
   const handleNext = () => {
     setStep(2);
@@ -48,24 +67,53 @@ export function AddBusinessModal() {
     setStep(1);
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAddBusiness = async () => {
+    setIsLoading(true);
+    try {
+      await createBusiness(formData);
+      toast({
+        description: "Business added successfully",
+        className: "bg-green-500 border-none text-white font-inter text-lg",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        description: "",
+        address: "",
+        category: "",
+        image: null,
+      });
+      setStep(1);
+
+      // Call the callback function if provided
+      if (onBusinessAdded) {
+        onBusinessAdded();
+      }
+      await wait();
+      setOpen(false);
+    } catch (err) {
+      toast({
+        description:
+          err instanceof Error ? err.message : "Failed to add business",
+        className: "bg-red-500 border-none text-white font-inter text-lg",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here
     console.log(formData);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newImages = Array.from(e.target.files);
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, ...newImages].slice(0, 6), // Limit to 6 images
-      }));
-    }
+    handleAddBusiness();
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="bg-[#E0E2E780]  px-4 text-sm font-medium rounded-lg text-black hover:bg-white/90">
         Add business
       </DialogTrigger>
@@ -93,11 +141,10 @@ export function AddBusinessModal() {
                   Name of business
                 </label>
                 <Input
+                  name="name"
                   placeholder="Business name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -107,11 +154,10 @@ export function AddBusinessModal() {
                   Business Description
                 </label>
                 <Textarea
+                  name="description"
                   placeholder="Describe your business"
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -121,11 +167,10 @@ export function AddBusinessModal() {
                   Business Address
                 </label>
                 <Textarea
+                  name="address"
                   placeholder="Where is this business located?"
                   value={formData.address}
-                  onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
-                  }
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -157,66 +202,83 @@ export function AddBusinessModal() {
                 type="button"
                 className="w-full text-lg py-6"
                 onClick={handleNext}
+                disabled={isLoading}
               >
-                Next
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  "Next"
+                )}
               </Button>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-base font-medium text-[#464A4F]">
-                  Add images
+                  Add image
                 </label>
-                <div className="grid grid-cols-2 gap-4">
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="relative aspect-video cursor-pointer rounded-lg border-2 border-dashed bg-muted hover:bg-muted/80"
-                    >
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                        onChange={handleImageUpload}
+                <div className="relative aspect-video cursor-pointer rounded-lg border-2 border-dashed bg-muted hover:bg-muted/80">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={handleImageUpload}
+                  />
+                  <div className="flex h-full items-center justify-center">
+                    {formData.image ? (
+                      <img
+                        src={URL.createObjectURL(formData.image)}
+                        alt="Upload"
+                        className="h-full w-full object-cover rounded-lg"
                       />
-                      <div className="flex h-full items-center justify-center">
-                        {formData.images[index] ? (
-                          <img
-                            src={
-                              URL.createObjectURL(formData.images[index]) ||
-                              "/placeholder.svg"
-                            }
-                            alt={`Upload ${index + 1}`}
-                            className="h-full w-full object-cover rounded-lg"
+                    ) : (
+                      <div className="text-muted-foreground">
+                        <svg
+                          className="mx-auto h-8 w-8"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect
+                            width="18"
+                            height="18"
+                            x="3"
+                            y="3"
+                            rx="2"
+                            ry="2"
                           />
-                        ) : (
-                          <div className="text-muted-foreground">
-                            <svg
-                              className="mx-auto h-8 w-8"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <rect
-                                width="18"
-                                height="18"
-                                x="3"
-                                y="3"
-                                rx="2"
-                                ry="2"
-                              />
-                              <circle cx="8.5" cy="8.5" r="1.5" />
-                              <path d="m21 15-5-5L5 21" />
-                            </svg>
-                          </div>
-                        )}
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <path d="m21 15-5-5L5 21" />
+                        </svg>
                       </div>
-                    </div>
-                  ))}
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -229,8 +291,38 @@ export function AddBusinessModal() {
                 >
                   Back
                 </Button>
-                <Button type="submit" className="flex-1 text-lg py-6">
-                  Add business
+                <Button
+                  type="submit"
+                  className="flex-1 text-lg py-6"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Adding business...
+                    </>
+                  ) : (
+                    "Add business"
+                  )}
                 </Button>
               </div>
             </div>
