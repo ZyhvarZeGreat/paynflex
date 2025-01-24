@@ -17,23 +17,44 @@ import { useNavigate } from "react-router";
 import bg from "@/assets/Background.png";
 import logo_login from "@/assets/logo-login.png";
 import { login } from "@/services/login";
-
+import { useToast } from "@/hooks/use-toast";
 export default function Login() {
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // await register({
-    //   email: email,
-    //   password: password,
-    //   phone_number: "07082749179",
-    // });
-    console.log("Login submitted");
-
-    navigate("/dashboard");
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    login({
+      phoneNumber: "07082749179",
+      password: password,
+    })
+      .then((response) => {
+        document.cookie = `token=${response.token}; path=/; secure; samesite=strict`;
+        toast({
+          title: "Login successful",
+          description: "Redirecting to dashboard",
+          className: "bg-green-500 text-white font-inter",
+        });
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 1000);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast({
+          title: "Login failed",
+          description: error?.message || "Please check your credentials",
+          className: "bg-red-500 text-white font-inter",
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const containerVariants = {
@@ -83,7 +104,7 @@ export default function Login() {
             </motion.div>
           </CardHeader>
           <CardContent className="h-[300px] w-[420px]">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form className="space-y-4">
               <motion.div variants={itemVariants} className="space-y-2">
                 <Label className="text-[#414651] text-sm" htmlFor="email">
                   Email
@@ -134,19 +155,19 @@ export default function Login() {
               <motion.div variants={itemVariants}>
                 <Button
                   onClick={(e) => {
-                    e.preventDefault();
-                    login({
-                      phoneNumber: "07082749179",
-                      password: password,
-                    }).then((response) => {
-                      document.cookie = `token=${response.token}; path=/; secure; samesite=strict`;
-                      navigate("/admin/dashboard");
-                    });
+                    handleSubmit(e);
                   }}
-                  // type="submit"
-                  className="w-full bg-[#222375] "
+                  disabled={isLoading}
+                  className="w-full bg-[#222375]"
                 >
-                  Login
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      Logging in...
+                    </div>
+                  ) : (
+                    "Login"
+                  )}
                 </Button>
               </motion.div>
             </form>

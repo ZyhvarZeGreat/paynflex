@@ -17,6 +17,31 @@ import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, ResponsiveContainer } from "recharts";
 
 export default function Transaction() {
+  const generateRandomData = (length: number, view: string) => {
+    const baseValue = view === "amount" ? 1000000 : 1000; // Higher base value for amount view
+
+    return Array.from({ length }, (_, i) => ({
+      day: i + 1,
+      successful: Math.floor(baseValue * Math.random() * 1.0), // 100% of base for successful
+      pending: Math.floor(baseValue * Math.random() * 0.5), // 50% of base for pending
+    }));
+  };
+
+  const [transactions, setTransactions] = useState<any>(null);
+  const [timeframe, setTimeframe] = useState(31);
+  const [selectedView, setSelectedView] = useState("transactions");
+  const [chartData, setChartData] = useState(() =>
+    generateRandomData(31, "transactions")
+  );
+
+  useEffect(() => {
+    setChartData(generateRandomData(timeframe, selectedView));
+  }, [timeframe, selectedView]);
+
+  const handleViewChange = (value: string) => {
+    setSelectedView(value);
+  };
+
   const handleTimeframeChange = (value: string) => {
     console.log("Timeframe Value", value);
     switch (value) {
@@ -33,18 +58,10 @@ export default function Transaction() {
         setTimeframe(31);
     }
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [transactions, setTransactions] = useState<any>(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   console.log(isLoading, error);
-  const [timeframe, setTimeframe] = useState(31);
-  // Sample data for the chart
-  const dailyData = Array.from({ length: timeframe }, (_, i) => ({
-    day: i + 1,
-    successful: Math.floor(transactions?.totalAmount * Math.random() * 1.4),
-    failed: Math.floor(transactions?.totalAmount * Math.random() * 1.6),
-  }));
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -309,7 +326,7 @@ export default function Transaction() {
       {/* Chart Section */}
       <Card className=" p-6">
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
-          <Select defaultValue="transactions">
+          <Select defaultValue="transactions" onValueChange={handleViewChange}>
             <SelectTrigger className="w-[180px] border-zinc-800 bg-transparent text-black">
               <SelectValue placeholder="Select view" />
             </SelectTrigger>
@@ -334,7 +351,7 @@ export default function Transaction() {
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={dailyData}
+                data={chartData}
                 margin={{ top: 40, right: 0, left: 0, bottom: 0 }}
               >
                 <XAxis
@@ -344,47 +361,12 @@ export default function Transaction() {
                   tick={{ fill: "#71717a" }}
                   padding={{ left: 10, right: 10 }}
                 />
-                {/* <Tooltip
-                  content={({ active, payload }: { active: boolean; payload: Array<{value: number; payload: {day: string}}> }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="rounded-lg p-2 text-sm text-black shadow-lg">
-                          <div className="mb-1">
-                            Day {payload[0].payload.day}
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-[#0B106E]" />
-                              <span>
-                                Successful:{" "}
-                                {payload?.[0]?.value?.toLocaleString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-[#0D8BFA]" />
-                              <span>
-                                Failed: {payload?.[1]?.value?.toLocaleString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                /> */}
                 <Bar
                   dataKey="successful"
                   fill="#0D8BFA"
-                  barSize={14}
                   radius={[4, 4, 0, 0]}
                 />
-                <Bar
-                  barSize={14}
-                  dataKey="failed"
-                  fill="#0B106E"
-                  radius={[4, 4, 0, 0]}
-                />
+                <Bar dataKey="pending" fill="#0B106E" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

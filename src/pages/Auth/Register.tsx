@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function Register() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -59,42 +60,49 @@ export default function Register() {
     },
   };
   const handleRegister = async () => {
-    register({
-      email: email,
-      password: password,
-      firstName: fullName.split(" ")[0],
-      lastName: fullName.split(" ")[1],
-      phoneNumber: phoneNumber,
-      roleId: "679173f5d2930ac4671e0f4e",
-    })
-      .then(() => {
-        toast({
-          title: "User Registered Successfully",
-        });
-        requestOTP({
-          identifier: email,
-          method: "email",
-        }).then(() => {
-          // setScene("verify");
-          navigate("/auth/login");
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        if (error?.status === 409) {
-          toast({
-            title: "User already registered",
-            description: "Please verify the OTP sent to your email",
-          });
-          setScene("verify");
-        } else {
-          toast({
-            title: "Registration failed",
-            description: error?.message || "An unexpected error occurred",
-            variant: "destructive",
-          });
-        }
+    setIsLoading(true);
+    try {
+      await register({
+        email: email,
+        password: password,
+        firstName: fullName.split(" ")[0],
+        lastName: fullName.split(" ")[1],
+        phoneNumber: phoneNumber,
+        roleId: "679173f5d2930ac4671e0f4e",
       });
+
+      toast({
+        title: "User Registered Successfully",
+        className: "bg-green-500 text-white font-inter",
+      });
+
+      toast({
+        title: "Redirecting to login page",
+        duration: 3000,
+        className: "bg-green-500 text-white font-inter",
+      });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    } catch (error: any) {
+      console.log(error);
+      if (error?.status === 409) {
+        toast({
+          title: "User already registered",
+          description: "Please verify the OTP sent to your email",
+        });
+        setScene("verify");
+      } else {
+        toast({
+          title: "Registration failed",
+          description: error?.message || "An unexpected error occurred",
+          className: "bg-red-500 text-white font-inter",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -207,10 +215,17 @@ export default function Register() {
                       e.preventDefault();
                       handleRegister();
                     }}
-                    // type="submit"
-                    className="w-full bg-[#222375] "
+                    disabled={isLoading}
+                    className="w-full bg-[#222375]"
                   >
-                    Register
+                    {isLoading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                        <span>Registering...</span>
+                      </div>
+                    ) : (
+                      "Register"
+                    )}
                   </Button>
                 </motion.div>
               </form>

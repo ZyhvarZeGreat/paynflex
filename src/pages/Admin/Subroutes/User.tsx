@@ -31,6 +31,8 @@ const chartConfig = {
 export default function User() {
   const [users, setUsers] = useState<any>(null);
   const [timeframe, setTimeframe] = useState(31);
+  const [selectedView, setSelectedView] = useState("user-activity");
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -57,27 +59,42 @@ export default function User() {
 
     fetchUsers();
   }, []);
-  const chartData = Array.from({ length: timeframe }, (_, i) => ({
-    day: i + 1,
-    users: users?.total_users || Math.floor(Math.random() * 400000),
-    isHighlight: i === 11,
-  }));
+
+  const generateRandomData = (length: number) => {
+    return Array.from({ length }, (_, i) => ({
+      day: i + 1,
+      users: Math.floor(Math.random() * 400000),
+      isHighlight: i === 11,
+    }));
+  };
+
+  const [chartData, setChartData] = useState(generateRandomData(timeframe));
+
+  useEffect(() => {
+    setChartData(generateRandomData(timeframe));
+  }, [timeframe, selectedView]);
+
   const handleTimeframeChange = (value: string) => {
     console.log("Timeframe Value", value);
     switch (value) {
       case "daily":
-        setTimeframe(31); // Last 31 days
+        setTimeframe(31);
         break;
       case "weekly":
-        setTimeframe(7); // Last 12 weeks
+        setTimeframe(7);
         break;
       case "monthly":
-        setTimeframe(12); // Last 12 months
+        setTimeframe(12);
         break;
       default:
         setTimeframe(31);
     }
   };
+
+  const handleViewChange = (value: string) => {
+    setSelectedView(value);
+  };
+
   console.log(users);
 
   const metrics = [
@@ -251,7 +268,7 @@ export default function User() {
       {/* Chart Section */}
       <Card className=" p-6">
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
-          <Select defaultValue="user-activity">
+          <Select defaultValue="user-activity" onValueChange={handleViewChange}>
             <SelectTrigger className="w-[130px] border-zinc-200 bg-transparent text-sm font-semibold text-[#4C5058]">
               <SelectValue placeholder="Select view" />
             </SelectTrigger>

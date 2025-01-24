@@ -20,6 +20,7 @@ import { MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddBusinessModal } from "@/Global/BusinessModal";
 import { useEffect, useState } from "react";
 import { getAllBusinesses, BusinessData } from "@/services/business";
+import PromotionModal from "@/Global/PromotionModal";
 
 export default function Businesses() {
   const [businesses, setBusinesses] = useState<BusinessData[]>([]);
@@ -54,6 +55,7 @@ export default function Businesses() {
   useEffect(() => {
     fetchBusinesses();
   }, []);
+
   const metrics = [
     {
       title: "All businesses",
@@ -234,14 +236,12 @@ export default function Businesses() {
           <button className="border-b-2 border-white pb-2 font-medium text-black">
             ALL BUSINESSES
           </button>
-          <button className="border-b-2 border-transparent pb-2 text-black  font-semibold  hover:border-zinc-700 hover:text-black font-light">
+          <button className="border-b-2 border-transparent pb-2 text-black  font-medium  hover:border-zinc-700 hover:text-black ">
             PROMOTIONS
           </button>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="text-black">
-            Promote business
-          </Button>
+          <PromotionModal businesses={businesses} />
           <AddBusinessModal onBusinessAdded={fetchBusinesses} />
         </div>
       </div>
