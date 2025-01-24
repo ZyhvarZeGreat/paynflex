@@ -15,8 +15,15 @@ import {
 import { Link } from "react-router";
 import { AddProductModal } from "@/Global/ProductsModal";
 import { getProducts, ProductData } from "@/services/product";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import { DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
 
-const categories = [
+const categoriesInitial = [
   {
     name: "Airtime",
     count: "4 Products",
@@ -49,6 +56,23 @@ export default function ProductDashboard() {
   const [products, setProducts] = useState<ProductData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newCategory, setNewCategory] = useState("");
+  const [productCount, setProductCount] = useState("");
+  const [categories, setCategories] = useState<
+    {
+      name: string;
+      count: string;
+      icon: React.ElementType;
+    }[]
+  >([
+    {
+      name: "Airtime",
+      count: "4 Products",
+      icon: Smartphone,
+    },
+    ...categoriesInitial,
+    // ... rest of initial categories ...
+  ]);
 
   const fetchProducts = async () => {
     try {
@@ -66,6 +90,22 @@ export default function ProductDashboard() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleAddCategory = () => {
+    if (newCategory.trim() && productCount.trim()) {
+      setCategories([
+        ...categories,
+        {
+          name: newCategory,
+          count: `${productCount} Products`,
+          icon: Building, // Default icon
+        },
+      ]);
+      // Reset inputs
+      setNewCategory("");
+      setProductCount("");
+    }
+  };
 
   return (
     <div className="grid grid-cols-12  min-h-screen ">
@@ -358,34 +398,85 @@ export default function ProductDashboard() {
       </div>
 
       {/* Sidebar */}
-      <div className=" col-span-12 lg:col-span-4 flex flex-col bg-[#F1F2F4] p-6">
-        <Button
-          variant="outline"
-          size="sm"
-          className="text-black self-end  bg-transparent border border-black/30 mb-8"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clip-path="url(#clip0_2_38893)">
-              <path
-                d="M3.95454 3.59127L3.77219 4.31877L3.95454 3.59127ZM6.20425 2.29241L5.48304 2.08658L6.20425 2.29241ZM2.15887 6.70147L2.69772 6.1798L2.15887 6.70147ZM2.15887 9.29921L1.62002 8.77753H1.62002L2.15887 9.29921ZM3.95454 12.4094L4.1369 13.1369L3.95454 12.4094ZM6.20425 13.7083L5.48304 13.9141L6.20425 13.7083ZM9.7956 13.7083L10.5168 13.9141L9.7956 13.7083ZM12.0453 12.4094L12.2277 11.6819L12.0453 12.4094ZM13.841 9.29921L13.3021 9.82088L13.841 9.29921ZM13.841 6.70147L13.3021 6.1798L13.841 6.70147ZM12.0453 3.59127L11.8629 2.86378L12.0453 3.59127ZM9.7956 2.29241L10.5168 2.08658L9.7956 2.29241ZM3.77219 4.31877C5.14233 4.66221 6.53781 3.85653 6.92545 2.49823L5.48304 2.08658C5.31756 2.66645 4.72182 3.0104 4.1369 2.86378L3.77219 4.31877ZM2.69772 6.1798C1.91582 5.37215 2.6818 4.04545 3.77219 4.31877L4.1369 2.86378C1.58271 2.22354 -0.211534 5.33127 1.62002 7.22314L2.69772 6.1798ZM2.69772 9.82088C3.68022 8.80602 3.68022 7.19465 2.69772 6.1798L1.62002 7.22314C2.03946 7.65639 2.03946 8.34429 1.62002 8.77753L2.69772 9.82088ZM3.77219 11.6819C2.68179 11.9552 1.91582 10.6285 2.69772 9.82088L1.62002 8.77753C-0.211535 10.6694 1.58271 13.7771 4.1369 13.1369L3.77219 11.6819ZM6.92546 13.5024C6.53781 12.1441 5.14233 11.3385 3.77219 11.6819L4.1369 13.1369C4.72182 12.9903 5.31756 13.3342 5.48304 13.9141L6.92546 13.5024ZM9.07439 13.5024C8.7659 14.5834 7.23395 14.5834 6.92546 13.5024L5.48304 13.9141C6.20568 16.4462 9.79417 16.4462 10.5168 13.9141L9.07439 13.5024ZM12.2277 11.6819C10.8575 11.3385 9.46203 12.1441 9.07439 13.5024L10.5168 13.9141C10.6823 13.3342 11.278 12.9903 11.8629 13.1369L12.2277 11.6819ZM13.3021 9.82088C14.084 10.6285 13.318 11.9552 12.2277 11.6819L11.8629 13.1369C14.4171 13.7771 16.2114 10.6694 14.3798 8.77753L13.3021 9.82088ZM13.3021 6.1798C12.3196 7.19465 12.3196 8.80602 13.3021 9.82088L14.3798 8.77753C13.9604 8.34429 13.9604 7.65639 14.3798 7.22314L13.3021 6.1798ZM12.2277 4.31877C13.318 4.04545 14.084 5.37215 13.3021 6.1798L14.3798 7.22314C16.2114 5.33127 14.4171 2.22354 11.8629 2.86378L12.2277 4.31877ZM9.07439 2.49823C9.46203 3.85653 10.8575 4.66221 12.2277 4.31877L11.8629 2.86378C11.278 3.0104 10.6823 2.66645 10.5168 2.08658L9.07439 2.49823ZM10.5168 2.08658C9.79417 -0.445528 6.20567 -0.445527 5.48304 2.08658L6.92545 2.49823C7.23395 1.41726 8.7659 1.41726 9.07439 2.49823L10.5168 2.08658ZM5.24992 8.00034C5.24992 9.51912 6.48114 10.7503 7.99992 10.7503V9.25034C7.30957 9.25034 6.74992 8.69069 6.74992 8.00034H5.24992ZM7.99992 10.7503C9.5187 10.7503 10.7499 9.51912 10.7499 8.00034H9.24992C9.24992 8.69069 8.69028 9.25034 7.99992 9.25034V10.7503ZM10.7499 8.00034C10.7499 6.48155 9.51871 5.25034 7.99992 5.25034V6.75034C8.69028 6.75034 9.24992 7.30998 9.24992 8.00034H10.7499ZM7.99992 5.25034C6.48114 5.25034 5.24992 6.48155 5.24992 8.00034H6.74992C6.74992 7.30998 7.30957 6.75034 7.99992 6.75034V5.25034Z"
-                fill="#494A4D"
-                fill-opacity="0.85"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_2_38893">
-                <rect width="16" height="16" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-          Manage Categories
-        </Button>
+      <div className=" col-span-12  lg:col-span-4 flex flex-col bg-[#F1F2F4] p-6">
+        <Dialog>
+          <DialogTrigger className="text-black flex rounded-lg p-2 items-center gap-2 self-end  bg-transparent border border-black/30 mb-8">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_2_38893)">
+                <path
+                  d="M3.95454 3.59127L3.77219 4.31877L3.95454 3.59127ZM6.20425 2.29241L5.48304 2.08658L6.20425 2.29241ZM2.15887 6.70147L2.69772 6.1798L2.15887 6.70147ZM2.15887 9.29921L1.62002 8.77753H1.62002L2.15887 9.29921ZM3.95454 12.4094L4.1369 13.1369L3.95454 12.4094ZM6.20425 13.7083L5.48304 13.9141L6.20425 13.7083ZM9.7956 13.7083L10.5168 13.9141L9.7956 13.7083ZM12.0453 12.4094L12.2277 11.6819L12.0453 12.4094ZM13.841 9.29921L13.3021 9.82088L13.841 9.29921ZM13.841 6.70147L13.3021 6.1798L13.841 6.70147ZM12.0453 3.59127L11.8629 2.86378L12.0453 3.59127ZM9.7956 2.29241L10.5168 2.08658L9.7956 2.29241ZM3.77219 4.31877C5.14233 4.66221 6.53781 3.85653 6.92545 2.49823L5.48304 2.08658C5.31756 2.66645 4.72182 3.0104 4.1369 2.86378L3.77219 4.31877ZM2.69772 6.1798C1.91582 5.37215 2.6818 4.04545 3.77219 4.31877L4.1369 2.86378C1.58271 2.22354 -0.211534 5.33127 1.62002 7.22314L2.69772 6.1798ZM2.69772 9.82088C3.68022 8.80602 3.68022 7.19465 2.69772 6.1798L1.62002 7.22314C2.03946 7.65639 2.03946 8.34429 1.62002 8.77753L2.69772 9.82088ZM3.77219 11.6819C2.68179 11.9552 1.91582 10.6285 2.69772 9.82088L1.62002 8.77753C-0.211535 10.6694 1.58271 13.7771 4.1369 13.1369L3.77219 11.6819ZM6.92546 13.5024C6.53781 12.1441 5.14233 11.3385 3.77219 11.6819L4.1369 13.1369C4.72182 12.9903 5.31756 13.3342 5.48304 13.9141L6.92546 13.5024ZM9.07439 13.5024C8.7659 14.5834 7.23395 14.5834 6.92546 13.5024L5.48304 13.9141C6.20568 16.4462 9.79417 16.4462 10.5168 13.9141L9.07439 13.5024ZM12.2277 11.6819C10.8575 11.3385 9.46203 12.1441 9.07439 13.5024L10.5168 13.9141C10.6823 13.3342 11.278 12.9903 11.8629 13.1369L12.2277 11.6819ZM13.3021 9.82088C14.084 10.6285 13.318 11.9552 12.2277 11.6819L11.8629 13.1369C14.4171 13.7771 16.2114 10.6694 14.3798 8.77753L13.3021 9.82088ZM13.3021 6.1798C12.3196 7.19465 12.3196 8.80602 13.3021 9.82088L14.3798 8.77753C13.9604 8.34429 13.9604 7.65639 14.3798 7.22314L13.3021 6.1798ZM12.2277 4.31877C13.318 4.04545 14.084 5.37215 13.3021 6.1798L14.3798 7.22314C16.2114 5.33127 14.4171 2.22354 11.8629 2.86378L12.2277 4.31877ZM9.07439 2.49823C9.46203 3.85653 10.8575 4.66221 12.2277 4.31877L11.8629 2.86378C11.278 3.0104 10.6823 2.66645 10.5168 2.08658L9.07439 2.49823ZM10.5168 2.08658C9.79417 -0.445528 6.20567 -0.445527 5.48304 2.08658L6.92545 2.49823C7.23395 1.41726 8.7659 1.41726 9.07439 2.49823L10.5168 2.08658ZM5.24992 8.00034C5.24992 9.51912 6.48114 10.7503 7.99992 10.7503V9.25034C7.30957 9.25034 6.74992 8.69069 6.74992 8.00034H5.24992ZM7.99992 10.7503C9.5187 10.7503 10.7499 9.51912 10.7499 8.00034H9.24992C9.24992 8.69069 8.69028 9.25034 7.99992 9.25034V10.7503ZM10.7499 8.00034C10.7499 6.48155 9.51871 5.25034 7.99992 5.25034V6.75034C8.69028 6.75034 9.24992 7.30998 9.24992 8.00034H10.7499ZM7.99992 5.25034C6.48114 5.25034 5.24992 6.48155 5.24992 8.00034H6.74992C6.74992 7.30998 7.30957 6.75034 7.99992 6.75034V5.25034Z"
+                  fill="#494A4D"
+                  fill-opacity="0.85"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_2_38893">
+                  <rect width="16" height="16" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+            Manage Categories
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] font-inter lg:left-[50%]">
+            <DialogHeader>
+              <DialogTitle>Add New Category</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="space-y-4">
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="category-name"
+                      className="text-sm font-medium text-gray-700 block mb-1"
+                    >
+                      Category Name
+                    </label>
+                    <input
+                      id="category-name"
+                      type="text"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder="Enter category name"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="product-count"
+                      className="text-sm font-medium text-gray-700 block mb-1"
+                    >
+                      Product Count
+                    </label>
+                    <input
+                      id="product-count"
+                      type="number"
+                      value={productCount}
+                      onChange={(e) => setProductCount(e.target.value)}
+                      placeholder="Enter number of products"
+                      min="0"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={handleAddCategory}
+                className="bg-blue-600 text-white hover:bg-blue-700 w-full"
+              >
+                Add Category
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <Card className="">
           <div className="flex py-4 px-6 border-b border-b-[#E0E2E780] items-center justify-between">
             <h2 className="text-lg font-semibold text-black">

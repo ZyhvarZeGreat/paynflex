@@ -4,7 +4,6 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Bell, Import, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 export default function DashboardWrapper({
   children,
 }: {
@@ -26,7 +25,7 @@ export default function DashboardWrapper({
     <SidebarProvider>
       <div className="flex h-screen font-inter  w-screen overflow-auto lg:overflow-hidden">
         <Sidebar className="" />
-        <div className="flex-1 overflow-scroll lg:overflow-hidden">
+        <div className="flex-1  lg:overflow-hidden">
           <div className="border-b">
             <div className="flex h-16  items-center px-4">
               <div className="flex w-full items-center justify-between ">
@@ -59,10 +58,8 @@ export default function DashboardWrapper({
               </div>
             </div>
           </div>
-          <main className="flex-1 p-4 md:p-6">
-            <Outlet />
-            {children}
-          </main>
+          <Outlet />
+          <main className="flex-1 overflow-scroll p-4 md:p-6">{children}</main>
         </div>
       </div>
     </SidebarProvider>

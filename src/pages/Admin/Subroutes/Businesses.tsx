@@ -25,6 +25,16 @@ export default function Businesses() {
   const [businesses, setBusinesses] = useState<BusinessData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const totalPages = Math.ceil(businesses.length / itemsPerPage);
+
+  const getCurrentBusinesses = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return businesses.slice(startIndex, endIndex);
+  };
 
   const fetchBusinesses = async () => {
     try {
@@ -237,143 +247,183 @@ export default function Businesses() {
       </div>
 
       {/* Table */}
-      <div className=" border-y border-[#E0E2E780] ">
-        <Table className="">
-          <TableHeader>
-            <TableRow className="border-[#E0E2E780] px-6 hover:bg-transparent">
-              <TableHead className="text-black  font-semibold ">
-                Name of business
-              </TableHead>
-              <TableHead className="text-black  font-semibold ">
-                Address
-              </TableHead>
-              <TableHead className="text-black  font-semibold ">
-                Category
-              </TableHead>
-              <TableHead className="text-black  font-semibold ">
-                Image
-              </TableHead>
-              <TableHead className="text-right text-black  font-semibold ">
-                Action
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center">
-                  <div className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin h-5 w-5 text-black"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    <span className="ml-2">Loading businesses...</span>
-                  </div>
-                </TableCell>
+      <div className="border-y border-[#E0E2E780]">
+        <div className="h-[400px] overflow-y-auto">
+          <Table>
+            <TableHeader className="sticky top-0 bg-white">
+              <TableRow className="border-[#E0E2E780] px-6 hover:bg-transparent">
+                <TableHead className="text-black  font-semibold ">
+                  Name of business
+                </TableHead>
+                <TableHead className="text-black  font-semibold ">
+                  Address
+                </TableHead>
+                <TableHead className="text-black  font-semibold ">
+                  Category
+                </TableHead>
+                <TableHead className="text-black  font-semibold ">
+                  Image
+                </TableHead>
+                <TableHead className="text-right text-black  font-semibold ">
+                  Action
+                </TableHead>
               </TableRow>
-            ) : error ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-red-500">
-                  {error}
-                </TableCell>
-              </TableRow>
-            ) : businesses.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center">
-                  No businesses found
-                </TableCell>
-              </TableRow>
-            ) : (
-              businesses.map((business, i) => (
-                <TableRow
-                  key={i}
-                  className="border-[#E0E2E780] hover:bg-zinc-800/50"
-                >
-                  <TableCell className="font-medium text-black">
-                    {business.name}
-                  </TableCell>
-                  <TableCell className="text-black font-light">
-                    {business.address}
-                  </TableCell>
-                  <TableCell className="text-black font-light">
-                    {business.category}
-                  </TableCell>
-                  <TableCell className="text-black font-light">
-                    {business.images ? (
-                      <img
-                        className="w-8 h-8 rounded-full"
-                        src={business.images}
-                        alt="Business Image"
-                      />
-                    ) : (
-                      "No image"
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="h-8 w-8 p-0 text-black font-light"
-                        >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[160px]">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    <div className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin h-5 w-5 text-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      <span className="ml-2">Loading businesses...</span>
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : error ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-red-500">
+                    {error}
+                  </TableCell>
+                </TableRow>
+              ) : businesses.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    No businesses found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                getCurrentBusinesses().map((business, i) => (
+                  <TableRow
+                    key={i}
+                    className="border-[#E0E2E780] hover:bg-zinc-800/50"
+                  >
+                    <TableCell className="font-medium text-black">
+                      {business.name}
+                    </TableCell>
+                    <TableCell className="text-black font-light">
+                      {business.address}
+                    </TableCell>
+                    <TableCell className="text-black font-light">
+                      {business.category}
+                    </TableCell>
+                    <TableCell className="text-black font-light">
+                      {business.images ? (
+                        <img
+                          className="w-8 h-8 rounded-full"
+                          src={business.images}
+                          alt="Business Image"
+                        />
+                      ) : (
+                        "No image"
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="h-8 w-8 p-0 text-black font-light"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[160px]">
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem>View Details</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {/* Pagination */}
-      <div className="mt-4 flex items-center justify-center gap-2">
-        <Button variant="outline" className="gap-2 text-black" size="sm">
-          <ChevronLeft className="h-4 w-4" /> Previous
-        </Button>
-        {[1, 2, 3, "...", 8, 9, 10].map((page, i) => (
+      {businesses.length > 0 && (
+        <div className="mt-4 flex items-center justify-center gap-2">
           <Button
-            key={i}
-            variant={page === 1 ? "default" : "ghost"}
+            variant="outline"
+            className="gap-2 text-black"
             size="sm"
-            className={
-              page === 1
-                ? "bg-white text-black hover:bg-white/90"
-                : "text-black font-light"
-            }
+            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
           >
-            {page}
+            <ChevronLeft className="h-4 w-4" /> Previous
           </Button>
-        ))}
-        <Button variant="outline" className="gap-2 text-black" size="sm">
-          Next <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+            if (
+              page === 1 ||
+              page === totalPages ||
+              (page >= currentPage - 1 && page <= currentPage + 1)
+            ) {
+              return (
+                <Button
+                  key={page}
+                  variant={page === currentPage ? "default" : "ghost"}
+                  size="sm"
+                  className={
+                    page === currentPage
+                      ? "bg-white text-black hover:bg-white/90"
+                      : "text-black font-light"
+                  }
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </Button>
+              );
+            } else if (page === currentPage - 2 || page === currentPage + 2) {
+              return (
+                <Button
+                  key={page}
+                  variant="ghost"
+                  size="sm"
+                  className="text-black font-light"
+                  disabled
+                >
+                  ...
+                </Button>
+              );
+            }
+            return null;
+          })}
+          <Button
+            variant="outline"
+            className="gap-2 text-black"
+            size="sm"
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
