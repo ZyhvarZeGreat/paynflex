@@ -71,7 +71,7 @@ export default function DashboardHome() {
                 </Card>
               </div>
               <Card className=" border-none flex flex-col gap-4 rounded-none p-3 shadow-none  col-span-8">
-                <div className="flex items-center justify-between">
+                <div className=" flex items-center justify-between">
                   <Select defaultValue="all-revenue">
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select revenue" />
