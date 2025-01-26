@@ -16,10 +16,12 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import bg from "@/assets/Background.png";
 import logo_login from "@/assets/logo-login.png";
-import { login } from "@/services/login";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+
 export default function Login() {
   const { toast } = useToast();
+  const { signin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,32 +31,27 @@ export default function Login() {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    login({
-      phoneNumber: "07082749179",
-      password: password,
-    })
-      .then((response) => {
-        document.cookie = `token=${response.token}; path=/; secure; samesite=strict`;
-        toast({
-          title: "Login successful",
-          description: "Redirecting to dashboard",
-          className: "bg-green-500 text-white font-inter",
-        });
-        setTimeout(() => {
-          navigate("/admin/dashboard");
-        }, 1000);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast({
-          title: "Login failed",
-          description: error?.message || "Please check your credentials",
-          className: "bg-red-500 text-white font-inter",
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
+
+    try {
+      await signin(email, password);
+      toast({
+        title: "Login successful",
+        description: "Redirecting to dashboard",
+        className: "bg-green-500 text-white font-inter",
       });
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+      }, 1000);
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        title: "Login failed",
+        description: error?.message || "Please check your credentials",
+        className: "bg-red-500 text-white font-inter",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const containerVariants = {

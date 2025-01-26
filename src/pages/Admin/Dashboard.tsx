@@ -16,6 +16,8 @@ import { useLocation } from "react-router";
 import logo from "@/assets/logo-signup.png";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 const menuItems = [
   {
@@ -132,6 +134,28 @@ const menuItems = [
 export function Dashboard() {
   const pathname = useLocation().pathname;
   const navigate = useNavigate();
+  const { signout } = useAuth();
+
+  const handleSignout = () => {
+    try {
+      signout();
+      toast({
+        title: "Login successful",
+        description: "Redirecting to dashboard",
+        className: "bg-green-500 text-white font-inter",
+      });
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+      }, 1000);
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        title: "Login failed",
+        description: error?.message || "Please check your credentials",
+        className: "bg-red-500 text-white font-inter",
+      });
+    }
+  };
   return (
     <ShadcnSidebar className="font-inter">
       <SidebarHeader className=" mt-6">
@@ -180,8 +204,7 @@ export function Dashboard() {
           <SidebarMenuItem>
             <Button
               onClick={() => {
-                document.cookie =
-                  "token=; max-age=0; path=/; Secure; SameSite=Strict";
+                handleSignout();
                 navigate("/login");
               }}
               className="w-full bg-transparent text-white hover:bg-white/10 justify-start"

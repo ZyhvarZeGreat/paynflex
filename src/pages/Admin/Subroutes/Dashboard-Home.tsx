@@ -16,7 +16,8 @@ import glo from "@/assets/telco icons/glo.png";
 import airtel from "@/assets/telco icons/airtel.png";
 import etisalat from "@/assets/telco icons/9mobile.png";
 import mtn from "@/assets/telco icons/mtn.png";
-
+import { useAuth } from "@/hooks/useAuth";
+import React from "react";
 export default function DashboardHome() {
   const dailyData = Array.from({ length: 31 }, (_, i) => ({
     day: i + 1,
@@ -26,6 +27,12 @@ export default function DashboardHome() {
   const verificationData = Array.from({ length: 20 }, () => ({
     value: Math.random() * 100,
   }));
+
+  const { checkAuth } = useAuth();
+
+  React.useEffect(() => {
+    checkAuth();
+  }, []);
 
   return (
     <div className=" p-4 lg:p-6">
@@ -64,7 +71,7 @@ export default function DashboardHome() {
                 </Card>
               </div>
               <Card className=" border-none flex flex-col gap-4 rounded-none p-3 shadow-none  col-span-8">
-                <div className=" flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <Select defaultValue="all-revenue">
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select revenue" />

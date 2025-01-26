@@ -12,35 +12,37 @@ import Transactions from "./pages/Admin/Subroutes/Transactions";
 import Dashboard_Home from "./pages/Admin/Subroutes/Dashboard-Home";
 import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
+import { RequireAuth } from "./Global/Require_Auth";
+import { AuthProvider } from "./hooks/useAuth";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/admin"
-          element={
-            // <AuthProvider>
-            //   <RequireAuth>
-            //   </RequireAuth>
-            // </AuthProvider>
-            <DashboardWrapper>
-              <Dashboard />
-            </DashboardWrapper>
-          }
-        >
-          <Route index path="dashboard" element={<Dashboard_Home />} />
-          <Route path="businesses" element={<Businesses />} />
-          <Route path="products" element={<Products />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="users" element={<User />} />
-          <Route path="transactions" element={<Transactions />} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/admin"
+            element={
+              <RequireAuth>
+                <DashboardWrapper>
+                  <Dashboard />
+                </DashboardWrapper>
+              </RequireAuth>
+            }
+          >
+            <Route index path="dashboard" element={<Dashboard_Home />} />
+            <Route path="businesses" element={<Businesses />} />
+            <Route path="products" element={<Products />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="users" element={<User />} />
+            <Route path="transactions" element={<Transactions />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
