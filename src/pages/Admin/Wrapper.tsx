@@ -34,26 +34,13 @@ export default function DashboardWrapper({
                   <h1 className="text-2xl font-semibold">{getPageTitle()}</h1>
                 </div>
                 <div className=" flex items-center justify-center">
-                  {getPageTitle() === "Dashboard" ? (
-                    <div className="flex gap-3 items-center">
-                      <Button variant="outline" className="gap-2">
-                        <Import className="h-4 w-4" />
-                        Import
-                      </Button>
-                      <Button className="gap-2 bg-[#6C5DD3] hover:bg-[#6C5DD3]/90">
-                        <Plus className="h-4 w-4" />
-                        Add
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Bell className="h-4 w-4" />
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4" />
+                    <Avatar>
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                  </div>
                 </div>
               </div>
             </div>
