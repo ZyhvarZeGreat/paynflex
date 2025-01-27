@@ -1,5 +1,4 @@
-"use client";
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,21 +19,49 @@ import { MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddBusinessModal } from "@/Global/BusinessModal";
 import { useEffect, useState } from "react";
 import { getAllBusinesses, BusinessData } from "@/services/business";
-import PromotionModal from "@/Global/PromotionModal";
+
+import { DeleteBusinessDialog } from "@/Global/DeleteBusinessDialog";
+import { EditBusinessDialog } from "@/Global/EditBusinessDialog";
+import { BusinessDetailsModal } from "@/Global/BusinessDetailsModal";
+import { deleteBusiness, updateBusiness } from "@/services/business";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Businesses() {
+  const { toast } = useToast();
   const [businesses, setBusinesses] = useState<BusinessData[]>([]);
+  const [promotedBusinesses, setPromotedBusinesses] = useState<BusinessData[]>(
+    []
+  );
+  const [activeTab, setActiveTab] = useState<"all" | "promoted">("all");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [selectedBusiness, setSelectedBusiness] = useState<BusinessData | null>(
+    null
+  );
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [categories] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const totalPages = Math.ceil(businesses.length / itemsPerPage);
 
   const getCurrentBusinesses = () => {
+    const currentBusinesses =
+      activeTab === "all" ? businesses : promotedBusinesses;
+
+    // Filter businesses based on search term
+    const filteredBusinesses = currentBusinesses.filter((business) => {
+      return (
+        business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        business.address.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return businesses.slice(startIndex, endIndex);
+    return filteredBusinesses.slice(startIndex, endIndex);
   };
 
   const fetchBusinesses = async () => {
@@ -42,8 +69,19 @@ export default function Businesses() {
       setIsLoading(true);
       const businesses = await getAllBusinesses();
       console.log("Business Data", businesses.data);
-      setBusinesses(businesses.data);
+
+      // Separate businesses into regular and promoted
+      const promoted = businesses.data.filter(
+        (business: BusinessData) => business?.deleteAt
+      );
+      const regular = businesses.data.filter(
+        (business: BusinessData) => !business?.deleteAt
+      );
+
+      setBusinesses(regular);
+      setPromotedBusinesses(promoted);
     } catch (err: unknown) {
+      console.log(err);
       setError(
         err instanceof Error ? err.message : "Failed to fetch businesses"
       );
@@ -138,7 +176,7 @@ export default function Businesses() {
     },
     {
       title: "Promotions",
-      value: "283,550",
+      value: promotedBusinesses.length,
       fill: "#E7F5E2",
       icon: (
         <svg
@@ -197,6 +235,45 @@ export default function Businesses() {
       increase: "75%",
     },
   ];
+  console.log(error);
+
+  // Add handlers for business operations
+  const handleDelete = async (businessId: string) => {
+    try {
+      await deleteBusiness(businessId);
+      await fetchBusinesses(); // Refresh the list
+      toast({
+        description: "Business deleted successfully",
+        className: "bg-green-500 border-none text-white",
+      });
+    } catch (error) {
+      toast({
+        description: "Failed to delete business",
+        className: "bg-red-500 border-none text-white",
+      });
+    }
+    setIsDeleteDialogOpen(false);
+    setSelectedBusiness(null);
+  };
+
+  const handleEdit = async (
+    businessId: string,
+    updatedData: Partial<BusinessData>
+  ) => {
+    try {
+      await updateBusiness(businessId, updatedData);
+      await fetchBusinesses(); // Refresh the list
+      toast({
+        description: "Business updated successfully",
+        className: "bg-green-500 border-none text-white",
+      });
+    } catch (error) {
+      toast({
+        description: "Failed to update business",
+        className: "bg-red-500 border-none text-white",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen  ">
@@ -233,15 +310,36 @@ export default function Businesses() {
       {/* Navigation and Actions */}
       <div className="mb-6  px-6 flex flex-col justify-between gap-4 sm:flex-row">
         <div className="flex gap-4 text-sm">
-          <button className="border-b-2 border-white pb-2 font-medium text-black">
+          <button
+            className={`border-b-2 pb-2 font-medium ${
+              activeTab === "all"
+                ? "border-white text-black"
+                : "border-transparent text-black hover:border-zinc-700"
+            }`}
+            onClick={() => setActiveTab("all")}
+          >
             ALL BUSINESSES
           </button>
-          <button className="border-b-2 border-transparent pb-2 text-black  font-medium  hover:border-zinc-700 hover:text-black ">
+          <button
+            className={`border-b-2 pb-2 font-medium ${
+              activeTab === "promoted"
+                ? "border-white text-black"
+                : "border-transparent text-black hover:border-zinc-700"
+            }`}
+            onClick={() => setActiveTab("promoted")}
+          >
             PROMOTIONS
           </button>
         </div>
-        <div className="flex gap-3">
-          <PromotionModal businesses={businesses} />
+        <div className="flex gap-3 items-center">
+          {/* Add search input */}
+          <input
+            type="text"
+            placeholder="Search businesses..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-3 py-2 border border-[#E0E2E7] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black/5"
+          />
           <AddBusinessModal onBusinessAdded={fetchBusinesses} />
         </div>
       </div>
@@ -346,10 +444,35 @@ export default function Businesses() {
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[160px]">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">
+                        <DropdownMenuContent
+                          align="end"
+                          className=" font-inter w-[180px]"
+                        >
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedBusiness(business);
+                              setIsEditDialogOpen(true);
+                            }}
+                            className="p-2 cursor-pointer"
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedBusiness(business);
+                              setIsDetailsModalOpen(true);
+                            }}
+                            className="p-2 cursor-pointer"
+                          >
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600 p-2"
+                            onClick={() => {
+                              setSelectedBusiness(business);
+                              setIsDeleteDialogOpen(true);
+                            }}
+                          >
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -424,6 +547,36 @@ export default function Businesses() {
           </Button>
         </div>
       )}
+
+      <BusinessDetailsModal
+        business={selectedBusiness}
+        isOpen={isDetailsModalOpen}
+        onClose={() => {
+          setIsDetailsModalOpen(false);
+          setSelectedBusiness(null);
+        }}
+      />
+
+      <EditBusinessDialog
+        business={selectedBusiness}
+        isOpen={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setSelectedBusiness(null);
+        }}
+        onEdit={handleEdit}
+        categories={categories}
+      />
+
+      <DeleteBusinessDialog
+        business={selectedBusiness}
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setSelectedBusiness(null);
+        }}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

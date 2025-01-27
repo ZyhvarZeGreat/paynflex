@@ -2,6 +2,7 @@ import { login } from "@/services/login";
 import * as React from "react";
 import { toast, useToast } from "./use-toast";
 import { useNavigate } from "react-router";
+import { setAuthToken } from "@/api/axios";
 
 interface User {
   id: string;
@@ -12,7 +13,11 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  signin: (email: string, password: string) => Promise<void>;
+  signin: (
+    email: string,
+    password: string,
+    phoneNumber: string
+  ) => Promise<void>;
   signout: () => void;
   isAuthenticated: boolean;
 }
@@ -28,18 +33,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .find((row) => row.startsWith("token="))
       ?.split("=")[1];
     if (token) {
-      // You might want to validate the token here
+      // Set the auth token in Axios when provider mounts
+      setAuthToken(token);
       return { id: "1", email: "", token: token };
     }
     return null;
   });
 
-  const signin = async (email: string, password: string) => {
+  // Set up an effect to update Axios headers whenever user/token changes
+  React.useEffect(() => {
+    const token = user?.token;
+    if (token) {
+      setAuthToken(token);
+    } else {
+      setAuthToken(null); // Clear the auth token if no user
+    }
+  }, [user]);
+
+  const signin = async (
+    email: string,
+    password: string,
+    phoneNumber: string
+  ) => {
     try {
       // Use your login service
-      const response = await login({ phoneNumber: "07082749179", password });
+      const response = await login({ phoneNumber: phoneNumber, password });
       const token = response.token;
-
+      setAuthToken(token);
       // Set cookie
       document.cookie = `token=${token}; path=/; secure; samesite=strict`;
 

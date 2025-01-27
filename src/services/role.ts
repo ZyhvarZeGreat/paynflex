@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import axiosInstance from "../api/axios";
 
 interface RoleData {
   name: string;
@@ -11,15 +12,11 @@ interface ApiError {
 
 export const createRole = async (data: RoleData) => {
   try {
-    const response = await axios.post(
-      "https://paynflex-k360.onrender.com/v1/roles",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axiosInstance.post("/v1/roles", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     return response.data;
   } catch (error) {
@@ -47,9 +44,7 @@ export const createRole = async (data: RoleData) => {
 
 export const getRoles = async () => {
   try {
-    const response = await axios.get(
-      "https://paynflex-k360.onrender.com/v1/roles"
-    );
+    const response = await axiosInstance.get("/v1/roles");
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -76,9 +71,7 @@ export const getRoles = async () => {
 
 export const getRoleById = async (id: string) => {
   try {
-    const response = await axios.get(
-      `https://paynflex-k360.onrender.com/role/${id}`
-    );
+    const response = await axiosInstance.get(`/role/${id}`);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

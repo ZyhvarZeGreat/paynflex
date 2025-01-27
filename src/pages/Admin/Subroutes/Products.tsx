@@ -3,16 +3,8 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import {
-  MoreVertical,
-  Smartphone,
-  ArrowDownToLine,
-  PlaySquare,
-  Wifi,
-  Building,
-} from "lucide-react";
+import { MoreVertical, Building } from "lucide-react";
 // import Image from "next/image"
-import { Link } from "react-router";
 import { AddProductModal } from "@/Global/ProductsModal";
 import { getProducts, ProductData } from "@/services/product";
 import {
@@ -22,57 +14,39 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
-
-const categoriesInitial = [
-  {
-    name: "Airtime",
-    count: "4 Products",
-    icon: Smartphone,
-  },
-  {
-    name: "Data",
-    count: "240 Products",
-    icon: ArrowDownToLine,
-  },
-  {
-    name: "SME Bundles",
-    count: "8 Products",
-    icon: PlaySquare,
-  },
-  {
-    name: "Cable subscriptions",
-    count: "16 Products",
-    icon: Wifi,
-  },
-  {
-    name: "Cable subscriptions",
-    count: "5 Products",
-
-    icon: Building,
-  },
-];
+import {
+  getCategories,
+  CategoryResponseData,
+  createCategory,
+  deleteCategory,
+  updateCategory,
+} from "@/services/category";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
 
 export default function ProductDashboard() {
   const [products, setProducts] = useState<ProductData[]>([]);
+  const [categories, setCategories] = useState<CategoryResponseData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newCategory, setNewCategory] = useState("");
-  const [productCount, setProductCount] = useState("");
-  const [categories, setCategories] = useState<
-    {
-      name: string;
-      count: string;
-      icon: React.ElementType;
-    }[]
-  >([
-    {
-      name: "Airtime",
-      count: "4 Products",
-      icon: Smartphone,
-    },
-    ...categoriesInitial,
-    // ... rest of initial categories ...
-  ]);
+
+  const [editingCategory, setEditingCategory] =
+    useState<CategoryResponseData | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -87,23 +61,116 @@ export default function ProductDashboard() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await getCategories();
+      console.log(response);
+      setCategories(response);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      setError(axiosError.message || "Failed to fetch categories");
+    }
+  };
+
   useEffect(() => {
-    fetchProducts();
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([fetchProducts(), fetchCategories()]);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
-  const handleAddCategory = () => {
-    if (newCategory.trim() && productCount.trim()) {
-      setCategories([
-        ...categories,
-        {
-          name: newCategory,
-          count: `${productCount} Products`,
-          icon: Building, // Default icon
-        },
-      ]);
-      // Reset inputs
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a category name",
+        className: "bg-red-500 text-sm font-inter text-white",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await createCategory({
+        name: newCategory,
+      });
+
+      await fetchCategories(); // Refresh categories
+      toast({
+        title: "Success",
+        description: "Category created successfully",
+        className: "bg-green-500 text-sm font-inter text-white",
+      });
+
+      // Reset form and close dialog
       setNewCategory("");
-      setProductCount("");
+      setIsDialogOpen(false);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      toast({
+        title: "Error",
+        description: axiosError.message || "Failed to create category",
+        className: "bg-red-500 text-sm font-inter text-white",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateCategory = async () => {
+    if (!editingCategory) return;
+
+    try {
+      setIsSubmitting(true);
+      await updateCategory(editingCategory._id, { name: editingCategory.name });
+
+      // Refresh the categories list
+      fetchCategories();
+
+      // Close the modal and reset state
+      setEditingCategory(null);
+      toast({
+        title: "Error",
+        description: "Category updated successfully",
+        className: "bg-green-500 text-sm font-inter text-white",
+      });
+    } catch (err: unknown) {
+      toast({
+        title: "Failed to add category",
+        description: err instanceof Error ? err.message : "An error occurred",
+        className: "bg-red-500 border-none text-white font-inter text-lg",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId: string) => {
+    setIsSubmitting(true);
+    try {
+      await deleteCategory(categoryId);
+      await fetchCategories(); // Refresh categories
+      toast({
+        title: "Success",
+        description: "Category deleted successfully",
+        className: "bg-green-500 text-sm font-inter text-white",
+      });
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      toast({
+        title: "Error",
+        description: axiosError.message || "Failed to delete category",
+        className: "bg-red-500 text-sm font-inter text-white",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -399,7 +466,7 @@ export default function ProductDashboard() {
 
       {/* Sidebar */}
       <div className=" col-span-12  lg:col-span-4 flex flex-col bg-[#F1F2F4] p-6">
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger className="text-black flex rounded-lg p-2 items-center gap-2 self-end  bg-transparent border border-black/30 mb-8">
             <svg
               width="16"
@@ -427,52 +494,28 @@ export default function ProductDashboard() {
             <DialogHeader>
               <DialogTitle>Add New Category</DialogTitle>
             </DialogHeader>
-            <div className="py-4">
-              <div className="space-y-4">
-                <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="category-name"
-                      className="text-sm font-medium text-gray-700 block mb-1"
-                    >
-                      Category Name
-                    </label>
-                    <input
-                      id="category-name"
-                      type="text"
-                      value={newCategory}
-                      onChange={(e) => setNewCategory(e.target.value)}
-                      placeholder="Enter category name"
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="product-count"
-                      className="text-sm font-medium text-gray-700 block mb-1"
-                    >
-                      Product Count
-                    </label>
-                    <input
-                      id="product-count"
-                      type="number"
-                      value={productCount}
-                      onChange={(e) => setProductCount(e.target.value)}
-                      placeholder="Enter number of products"
-                      min="0"
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <label htmlFor="name" className="text-sm font-medium">
+                  Category Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  placeholder="Enter category name"
+                />
               </div>
             </div>
             <DialogFooter>
               <Button
                 onClick={handleAddCategory}
-                className="bg-blue-600 text-white hover:bg-blue-700 w-full"
+                disabled={isSubmitting}
+                className="w-full"
               >
-                Add Category
+                {isSubmitting ? "Adding..." : "Add Category"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -484,26 +527,171 @@ export default function ProductDashboard() {
             </h2>
           </div>
           <div className="mt-4 px-6 space-y-2">
-            {categories.map((category, index) => (
-              <Link
-                key={index}
-                to="#"
-                className="flex items-center justify-between rounded-lg p-4"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="rounded-full bg-blue-100 p-2">
-                    <category.icon className="h-5 w-5 text-blue-600" />
+            {isLoading ? (
+              <div className="flex items-center justify-center p-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900" />
+              </div>
+            ) : error ? (
+              <div className="text-red-500 p-4">{error}</div>
+            ) : (
+              categories?.map((category) => (
+                <div
+                  key={category._id}
+                  className="flex items-center justify-between rounded-lg p-4 hover:bg-gray-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-blue-100 p-2">
+                      <Building className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <span className="text-black">{category.name}</span>
                   </div>
-                  <span className="text-black">{category.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-[#181D27A6]">4 Products</span>
+
+                    {/* Edit Button */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditingCategory(category)}
+                      disabled={isSubmitting}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
+                      </svg>
+                    </Button>
+
+                    {/* Delete Button with Confirmation */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="font-inter"
+                          disabled={isSubmitting}
+                        >
+                          <svg
+                            className="h-4 w-4 text-red-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="font-inter">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="font-inter">
+                            Delete Category
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this category? This
+                            action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteCategory(category._id)}
+                            className="bg-red-600 text-white hover:bg-red-700"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
-                <span className="text-sm   text-[#181D27A6]">
-                  {category.count}
-                </span>
-              </Link>
-            ))}
+              ))
+            )}
           </div>
         </Card>
       </div>
+
+      {editingCategory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={() => setEditingCategory(null)}
+          />
+
+          {/* Modal */}
+          <div className="relative z-50 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Edit Category</h2>
+              <button
+                onClick={() => setEditingCategory(null)}
+                className="rounded-full p-1 hover:bg-gray-100"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="edit-name" className="text-sm font-medium">
+                  Category Name
+                </label>
+                <input
+                  id="edit-name"
+                  type="text"
+                  value={editingCategory.name}
+                  onChange={(e) =>
+                    setEditingCategory({
+                      ...editingCategory,
+                      name: e.target.value,
+                    })
+                  }
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter category name"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  onClick={() => setEditingCategory(null)}
+                  className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdateCategory}
+                  disabled={isSubmitting}
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

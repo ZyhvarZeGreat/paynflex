@@ -96,18 +96,18 @@ export default function Settings() {
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="  overflow-scroll">
                   {usersList.map((user, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-normal">
-                        {user.firstName} {user.lastName}
+                        {user?.firstName} {user?.lastName}
                       </TableCell>
-                      <TableCell>{user.roleId.name}</TableCell>
+                      <TableCell>{user?.roleId?.name}</TableCell>
                       <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {new Date(user?.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {new Date(user?.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>

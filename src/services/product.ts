@@ -1,3 +1,4 @@
+import axiosInstance from "@/api/axios";
 import axios, { AxiosError } from "axios";
 
 export interface ProductData {
@@ -24,7 +25,7 @@ export const createProduct = async (data: ProductData) => {
       formData.append("image", data.image);
     }
 
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       "https://paynflex-k360.onrender.com/v1/products",
       formData,
       {
@@ -61,7 +62,7 @@ export const createProduct = async (data: ProductData) => {
 
 export const getProducts = async () => {
   try {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       "https://paynflex-k360.onrender.com/v1/products"
     );
     return response.data;
@@ -91,7 +92,7 @@ export const getProducts = async () => {
 
 // export const getProductById = async (id: string) => {
 //   try {
-//     const response = await axios.get(
+//     const response = await axiosInstance.get(
 //       `https://paynflex-k360.onrender.com/product/`
 //     );
 //     return response.data;

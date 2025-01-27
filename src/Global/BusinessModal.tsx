@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { BusinessData, createBusiness } from "@/services/business";
 import { toast } from "@/hooks/use-toast";
+import { CategoryResponseData, getCategories } from "@/services/category";
 
 export function AddBusinessModal({
   onBusinessAdded,
@@ -30,6 +31,7 @@ export function AddBusinessModal({
   onBusinessAdded?: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState<CategoryResponseData[]>([]);
   const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<BusinessData>({
@@ -38,7 +40,25 @@ export function AddBusinessModal({
     address: "",
     category: "",
     image: null,
+    deleteAt: new Date(),
   });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const fetchedCategories = await getCategories();
+        setCategories(fetchedCategories);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        toast({
+          description: err instanceof Error ? err.message : "An error occurred",
+          className: "bg-red-500 border-none text-white font-inter text-lg",
+        });
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -46,7 +66,7 @@ export function AddBusinessModal({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "deleteAt" ? new Date(value) : value,
     }));
   };
 
@@ -85,6 +105,7 @@ export function AddBusinessModal({
         address: "",
         category: "",
         image: null,
+        deleteAt: new Date(),
       });
       setStep(1);
 
@@ -94,10 +115,10 @@ export function AddBusinessModal({
       }
       await wait();
       setOpen(false);
-    } catch (err) {
+    } catch (err: unknown) {
       toast({
-        description:
-          err instanceof Error ? err.message : "Failed to add business",
+        title: "Failed to add business",
+        description: err instanceof Error ? err.message : "An error occurred",
         className: "bg-red-500 border-none text-white font-inter text-lg",
       });
     } finally {
@@ -114,12 +135,12 @@ export function AddBusinessModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="bg-[#E0E2E780]  px-4 text-sm font-medium rounded-lg text-black hover:bg-white/90">
+      <DialogTrigger className="bg-[#E0E2E780] h-10 px-4 py-2   text-sm font-medium rounded-lg text-black hover:bg-white/90">
         Add business
       </DialogTrigger>
 
       <DialogOverlay className="bg-black/50" />
-      <DialogContent className="sm:max-w-[390px] h-[724px] flex flex-col gap-8  font-inter  ">
+      <DialogContent className="sm:max-w-[390px] h-[744px] flex flex-col gap-8  font-inter  ">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -190,12 +211,29 @@ export function AddBusinessModal({
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="restaurant">Restaurant</SelectItem>
-                    <SelectItem value="retail">Retail</SelectItem>
-                    <SelectItem value="service">Service</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem
+                        key={category.name}
+                        value={category.name.toLowerCase()}
+                      >
+                        {category.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-base font-medium text-[#464A4F]">
+                  Expiry Window (Optional)
+                </label>
+                <Input
+                  type="datetime-local"
+                  name="deleteAt"
+                  value={formData?.deleteAt?.toISOString().slice(0, 16)}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <Button

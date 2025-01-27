@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import axiosInstance from "../api/axios";
 
 interface LoginData {
   password: string;
@@ -12,15 +13,11 @@ interface ApiError {
 
 export const login = async (data: LoginData) => {
   try {
-    const response = await axios.post(
-      "https://paynflex-k360.onrender.com/v1/auth/login",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axiosInstance.post("/v1/auth/login", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     return response.data;
   } catch (error) {

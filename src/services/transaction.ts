@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import axiosInstance from "../api/axios";
 
 interface ApiError {
   message: string;
@@ -7,9 +8,7 @@ interface ApiError {
 
 export const getTransactions = async () => {
   try {
-    const response = await axios.get(
-      "https://paynflex-k360.onrender.com/v1/auth/admin/trx-stat"
-    );
+    const response = await axiosInstance.get("/v1/auth/admin/trx-stat");
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -37,8 +36,8 @@ export const getTransactions = async () => {
 
 export const getTransactionByTimeFrame = async (timeFrame: string) => {
   try {
-    const response = await axios.get(
-      `https://paynflex-k360.onrender.com/v1/auth/admin/trx-stat/${timeFrame}`
+    const response = await axiosInstance.get(
+      `/v1/auth/admin/trx-stat/${timeFrame}`
     );
     return response.data;
   } catch (error) {
