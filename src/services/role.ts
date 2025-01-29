@@ -3,7 +3,7 @@ import axiosInstance from "../api/axios";
 
 interface RoleData {
   name: string;
-  id: string;
+  id?: string;
 }
 
 interface ApiError {
