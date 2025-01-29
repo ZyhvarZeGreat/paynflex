@@ -21,6 +21,7 @@ import { AddPermissionModal } from "./PermissionsModal";
 import { getRoles, updateRole, deleteRole } from "@/services/role";
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { updateUsers, deleteUsersList } from "@/services/user";
 
 interface Role {
   name: string;
@@ -91,7 +92,7 @@ export default function RolesAndPermissions() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                      className="font-inter  text-lg w-[200px] flex items-start justify-center flex-col h-[130px]"
+                      className="font-inter text-lg w-[200px] flex items-start justify-center flex-col h-[130px]"
                       align="end"
                     >
                       <DropdownMenuItem onClick={() => setEditingRole(role)}>
@@ -101,13 +102,53 @@ export default function RolesAndPermissions() {
                         View details
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => {
-                          setRoleToDelete(role);
-                          console.log(role);
+                        onClick={async () => {
+                          try {
+                            await updateUsers(role.id, {
+                              /* user data to update */
+                            });
+                            toast({
+                              title: "Success",
+                              description: "User updated successfully",
+                              className:
+                                "bg-green-500 text-white font-inter text-sm",
+                            });
+                          } catch (error) {
+                            console.error("Error updating user:", error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to Update User",
+                              className:
+                                "bg-red-500 text-white font-inter text-sm",
+                            });
+                          }
+                        }}
+                      >
+                        Update Users
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={async () => {
+                          try {
+                            await deleteUsersList(role.id);
+                            toast({
+                              title: "Success",
+                              description: "User deleted successfully",
+                              className:
+                                "bg-green-500 text-white font-inter text-sm",
+                            });
+                          } catch (error) {
+                            console.error("Error deleting user:", error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to Delete User",
+                              className:
+                                "bg-red-500 text-white font-inter text-sm",
+                            });
+                          }
                         }}
                         className="text-red-600"
                       >
-                        Delete role
+                        Delete Users
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

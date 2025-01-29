@@ -13,11 +13,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  signin: (
-    email: string,
-    password: string,
-    phoneNumber: string
-  ) => Promise<void>;
+  signin: (email: string, password: string) => Promise<void>;
   signout: () => void;
   isAuthenticated: boolean;
 }
@@ -50,14 +46,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  const signin = async (
-    email: string,
-    password: string,
-    phoneNumber: string
-  ) => {
+  const signin = async (email: string, password: string) => {
     try {
       // Use your login service
-      const response = await login({ phoneNumber: phoneNumber, password });
+      const response = await login({ email: email, password });
       const token = response.token;
       setAuthToken(token);
       // Set cookie

@@ -25,7 +25,8 @@ import { PasswordSettings } from "@/Global/Password";
 import { useEffect, useState } from "react";
 import { EditProfile } from "@/Global/EditProfile";
 import { AddUserModal } from "@/Global/UserModal";
-import { getUsersList } from "@/services/user";
+import { getUsersList, updateUsers, deleteUsersList } from "@/services/user";
+import { toast } from "@/hooks/use-toast";
 
 export default function Settings() {
   interface User {
@@ -42,24 +43,35 @@ export default function Settings() {
 
   const [scene, setScene] = useState<"profile" | "edit-profile">("profile");
   const [usersList, setUsersList] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUsersList = async () => {
+      setIsLoading(true);
       try {
         const response = await getUsersList();
         console.log(response);
         setUsersList(response.data);
       } catch (err) {
         console.error("Error fetching users list:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchUsersList();
   }, []);
+
+  const filteredUsers = usersList.filter((user) => {
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    return fullName.includes(searchQuery.toLowerCase());
+  });
+
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
       {/* Main Content */}
@@ -81,8 +93,10 @@ export default function Settings() {
                   <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                   <Input
                     type="search"
-                    placeholder="Add product"
+                    placeholder="Search users"
                     className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <AddUserModal />
@@ -100,8 +114,8 @@ export default function Settings() {
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody className="  overflow-scroll">
-                  {usersList.map((user, i) => (
+                <TableBody className="overflow-scroll">
+                  {filteredUsers.map((user, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-normal">
                         {user?.firstName} {user?.lastName}
@@ -121,22 +135,29 @@ export default function Settings() {
                               <span className="sr-only">Open menu</span>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent
+                            className="font-inter"
+                            align="end"
+                          >
                             <DropdownMenuItem
-                              onClick={() => setEditingUser(user)}
+                              onClick={() => {
+                                setEditingUser(user);
+                              }}
                             >
-                              Edit user
+                              Edit User
                             </DropdownMenuItem>
+
                             <DropdownMenuItem
                               onClick={() => setViewingUser(user)}
                             >
                               View details
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => setUserToDelete(user)}
-                              className="text-red-600"
+                              onClick={() => {
+                                setUserToDelete(user);
+                              }}
                             >
-                              Delete user
+                              Delete User
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -237,21 +258,7 @@ export default function Settings() {
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Role</label>
-                <select
-                  value={editingUser.roleId._id}
-                  onChange={(e) =>
-                    setEditingUser({
-                      ...editingUser,
-                      roleId: { ...editingUser.roleId, _id: e.target.value },
-                    })
-                  }
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                >
-                  {/* Add your roles options here */}
-                </select>
-              </div>
+
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   onClick={() => setEditingUser(null)}
@@ -260,11 +267,31 @@ export default function Settings() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    // Add your update logic here
-                    setEditingUser(null);
+                  onClick={async () => {
+                    setIsSubmitting(true);
+                    try {
+                      await updateUsers(editingUser._id, {
+                        firstName: editingUser.firstName,
+                        lastName: editingUser.lastName,
+                        email: editingUser.email,
+                      });
+                      toast({
+                        title: "Success",
+                        description: "User updated successfully",
+                        className: "bg-green-500 text-white font-inter text-sm",
+                      });
+                      setEditingUser(null);
+                    } catch (error) {
+                      console.error("Error updating user:", error);
+                      toast({
+                        title: "Error",
+                        description: "Failed to Update User",
+                        className: "bg-red-500 text-white font-inter text-sm",
+                      });
+                    } finally {
+                      setIsSubmitting(false);
+                    }
                   }}
-                  disabled={isSubmitting}
                   className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white"
                 >
                   {isSubmitting ? "Saving..." : "Save Changes"}
@@ -322,8 +349,8 @@ export default function Settings() {
                 <p className="text-sm">{viewingUser.email}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Role</p>
-                <p className="text-sm">{viewingUser.roleId.name}</p>
+                <p className="text-sm font-medium text-gray-500">Role ID</p>
+                <p className="text-sm">{viewingUser._id}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Date Added</p>
@@ -390,9 +417,26 @@ export default function Settings() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    // Add your delete logic here
-                    setUserToDelete(null);
+                  onClick={async () => {
+                    setIsSubmitting(true);
+                    try {
+                      await deleteUsersList(userToDelete._id);
+                      toast({
+                        title: "Success",
+                        description: "User deleted successfully",
+                        className: "bg-green-500 text-white font-inter text-sm",
+                      });
+                      setUserToDelete(null);
+                    } catch (error) {
+                      console.error("Error deleting user:", error);
+                      toast({
+                        title: "Error",
+                        description: "Failed to Delete User",
+                        className: "bg-red-500 text-white font-inter text-sm",
+                      });
+                    } finally {
+                      setIsSubmitting(false);
+                    }
                   }}
                   disabled={isSubmitting}
                   className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white"

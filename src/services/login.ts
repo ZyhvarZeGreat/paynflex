@@ -3,7 +3,7 @@ import axiosInstance from "../api/axios";
 
 interface LoginData {
   password: string;
-  phoneNumber: string;
+  email: string;
 }
 
 interface ApiError {
@@ -13,7 +13,7 @@ interface ApiError {
 
 export const login = async (data: LoginData) => {
   try {
-    const response = await axiosInstance.post("/v1/auth/login", data, {
+    const response = await axiosInstance.post("/v1/auth/admin/login", data, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -26,7 +26,7 @@ export const login = async (data: LoginData) => {
       if (axiosError.response) {
         // Server responded with error status
         throw {
-          message: axiosError.response.data.message || "Registration failed",
+          message: axiosError.response.data.message || "Login failed",
           status: axiosError.response.status,
         };
       } else if (axiosError.request) {

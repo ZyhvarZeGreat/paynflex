@@ -23,7 +23,6 @@ export default function Login() {
   const { toast } = useToast();
   const { signin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +33,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await signin(email, password, phoneNumber);
+      await signin(email, password);
       toast({
         title: "Login successful",
         description: "Redirecting to dashboard",
@@ -112,20 +111,6 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
-                  required
-                />
-              </motion.div>
-              <motion.div variants={itemVariants} className="space-y-2">
-                <Label className="text-[#414651] text-sm" htmlFor="email">
-                  Phone Number
-                </Label>
-                <Input
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  id="phone-number"
-                  type="text"
-                  inputMode="numeric"
                   placeholder="Enter your email"
                   required
                 />

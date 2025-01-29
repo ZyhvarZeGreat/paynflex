@@ -60,3 +60,62 @@ export const getUsersList = async () => {
     };
   }
 };
+
+export const updateUsers = async (userId: string, userData: any) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/v1/auth/admin/update-role/${userId}`,
+      userData
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiError>;
+      if (axiosError.response) {
+        throw {
+          message: axiosError.response.data.message || "Failed to update user",
+          status: axiosError.response.status,
+        };
+      } else if (axiosError.request) {
+        throw {
+          message:
+            "No response from server. Please check your internet connection.",
+          status: 500,
+        };
+      }
+    }
+    throw {
+      message: "An unexpected error occurred while updating user",
+      status: 500,
+    };
+  }
+};
+
+export const deleteUsersList = async (userId: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/v1/auth/admin/update-role/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiError>;
+      if (axiosError.response) {
+        throw {
+          message: axiosError.response.data.message || "Failed to delete user",
+          status: axiosError.response.status,
+        };
+      } else if (axiosError.request) {
+        throw {
+          message:
+            "No response from server. Please check your internet connection.",
+          status: 500,
+        };
+      }
+    }
+    throw {
+      message: "An unexpected error occurred while deleting user",
+      status: 500,
+    };
+  }
+};
