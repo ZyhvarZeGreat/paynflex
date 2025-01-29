@@ -42,6 +42,10 @@ export default function Settings() {
 
   const [scene, setScene] = useState<"profile" | "edit-profile">("profile");
   const [usersList, setUsersList] = useState<User[]>([]);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchUsersList = async () => {
@@ -118,9 +122,20 @@ export default function Settings() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Edit user</DropdownMenuItem>
-                            <DropdownMenuItem>View details</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
+                            <DropdownMenuItem
+                              onClick={() => setEditingUser(user)}
+                            >
+                              Edit user
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setViewingUser(user)}
+                            >
+                              View details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setUserToDelete(user)}
+                              className="text-red-600"
+                            >
                               Delete user
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -150,6 +165,245 @@ export default function Settings() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={() => setEditingUser(null)}
+          />
+          <div className="relative z-50 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Edit User</h2>
+              <button
+                onClick={() => setEditingUser(null)}
+                className="rounded-full p-1 hover:bg-gray-100"
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M6 18L18 6M6 6l12 12"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">First Name</label>
+                  <input
+                    type="text"
+                    value={editingUser.firstName}
+                    onChange={(e) =>
+                      setEditingUser({
+                        ...editingUser,
+                        firstName: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Last Name</label>
+                  <input
+                    type="text"
+                    value={editingUser.lastName}
+                    onChange={(e) =>
+                      setEditingUser({
+                        ...editingUser,
+                        lastName: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email</label>
+                <input
+                  type="email"
+                  value={editingUser.email}
+                  onChange={(e) =>
+                    setEditingUser({ ...editingUser, email: e.target.value })
+                  }
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Role</label>
+                <select
+                  value={editingUser.roleId._id}
+                  onChange={(e) =>
+                    setEditingUser({
+                      ...editingUser,
+                      roleId: { ...editingUser.roleId, _id: e.target.value },
+                    })
+                  }
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                >
+                  {/* Add your roles options here */}
+                </select>
+              </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  onClick={() => setEditingUser(null)}
+                  className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // Add your update logic here
+                    setEditingUser(null);
+                  }}
+                  disabled={isSubmitting}
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white"
+                >
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View User Modal */}
+      {viewingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={() => setViewingUser(null)}
+          />
+          <div className="relative z-50 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">User Details</h2>
+              <button
+                onClick={() => setViewingUser(null)}
+                className="rounded-full p-1 hover:bg-gray-100"
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M6 18L18 6M6 6l12 12"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    First Name
+                  </p>
+                  <p className="text-sm">{viewingUser.firstName}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Last Name</p>
+                  <p className="text-sm">{viewingUser.lastName}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Email</p>
+                <p className="text-sm">{viewingUser.email}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Role</p>
+                <p className="text-sm">{viewingUser.roleId.name}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Date Added</p>
+                <p className="text-sm">
+                  {new Date(viewingUser.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex justify-end pt-4">
+                <button
+                  onClick={() => setViewingUser(null)}
+                  className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete User Modal */}
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={() => setUserToDelete(null)}
+          />
+          <div className="relative z-50 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Delete User</h2>
+              <button
+                onClick={() => setUserToDelete(null)}
+                className="rounded-full p-1 hover:bg-gray-100"
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M6 18L18 6M6 6l12 12"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Are you sure you want to delete this user? This action cannot be
+                undone.
+              </p>
+              <p className="text-sm">
+                <span className="font-medium">User: </span>
+                {userToDelete.firstName} {userToDelete.lastName}
+              </p>
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  onClick={() => setUserToDelete(null)}
+                  className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // Add your delete logic here
+                    setUserToDelete(null);
+                  }}
+                  disabled={isSubmitting}
+                  className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white"
+                >
+                  {isSubmitting ? "Deleting..." : "Delete User"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

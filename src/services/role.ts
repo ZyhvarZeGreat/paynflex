@@ -3,6 +3,7 @@ import axiosInstance from "../api/axios";
 
 interface RoleData {
   name: string;
+  id: string;
 }
 
 interface ApiError {
@@ -91,6 +92,66 @@ export const getRoleById = async (id: string) => {
     }
     throw {
       message: "An unexpected error occurred while fetching role",
+      status: 500,
+    };
+  }
+};
+
+export const updateRole = async (id: string, data: RoleData) => {
+  try {
+    const response = await axiosInstance.patch(`/v1/roles/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiError>;
+      if (axiosError.response) {
+        throw {
+          message: axiosError.response.data.message || "Failed to update role",
+          status: axiosError.response.status,
+        };
+      } else if (axiosError.request) {
+        throw {
+          message:
+            "No response from server. Please check your internet connection.",
+          status: 500,
+        };
+      }
+    }
+    throw {
+      message: "An unexpected error occurred while updating role",
+      status: 500,
+    };
+  }
+};
+
+export const deleteRole = async (id: string) => {
+  console.log(id);
+  try {
+    const response = await axiosInstance.delete(`/v1/roles/${id}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiError>;
+      if (axiosError.response) {
+        throw {
+          message: axiosError.response.data.message || "Failed to delete role",
+          status: axiosError.response.status,
+        };
+      } else if (axiosError.request) {
+        throw {
+          message:
+            "No response from server. Please check your internet connection.",
+          status: 500,
+        };
+      }
+    }
+    throw {
+      message: "An unexpected error occurred while deleting role",
       status: 500,
     };
   }
