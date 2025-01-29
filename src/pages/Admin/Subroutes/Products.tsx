@@ -137,7 +137,7 @@ export default function ProductDashboard() {
       // Close the modal and reset state
       setEditingCategory(null);
       toast({
-        title: "Error",
+        title: "Success",
         description: "Category updated successfully",
         className: "bg-green-500 text-sm font-inter text-white",
       });

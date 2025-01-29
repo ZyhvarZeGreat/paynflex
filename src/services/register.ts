@@ -1,3 +1,4 @@
+import axiosInstance from "@/api/axios";
 import axios, { AxiosError } from "axios";
 
 export interface RegisterData {
@@ -16,7 +17,7 @@ interface ApiError {
 
 export const register = async (data: RegisterData) => {
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       "https://paynflex-k360.onrender.com/v1/auth/admin/create",
       data,
       {

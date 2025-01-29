@@ -86,7 +86,7 @@ export const updateCategory = async (
   categoryId: string,
   categoryData: Partial<CategoryRequestData>
 ): Promise<CategoryResponseData> => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.patch(
     `/v1/category/${categoryId}`,
     categoryData
   );
