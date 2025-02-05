@@ -52,7 +52,7 @@ export default function Settings() {
 
   useEffect(() => {
     const fetchUsersList = async () => {
-      console.log(isLoading)
+      console.log(isLoading);
       setIsLoading(true);
       try {
         const response = await getUsersList();
@@ -117,7 +117,6 @@ export default function Settings() {
                 </TableHeader>
                 <TableBody className="overflow-scroll">
                   {filteredUsers.map((user, i) => (
-              
                     <TableRow key={i}>
                       <TableCell className="font-normal">
                         {user?.firstName} {user?.lastName}
@@ -282,6 +281,7 @@ export default function Settings() {
                         description: "User updated successfully",
                         className: "bg-green-500 text-white font-inter text-sm",
                       });
+                      getUsersList();
                       setEditingUser(null);
                     } catch (error) {
                       console.error("Error updating user:", error);
@@ -378,7 +378,9 @@ export default function Settings() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="fixed inset-0 bg-black/50"
-            onClick={() => {setUserToDelete(null)}}
+            onClick={() => {
+              setUserToDelete(null);
+            }}
           />
           <div className="relative z-50 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
             <div className="mb-4 flex items-center justify-between">

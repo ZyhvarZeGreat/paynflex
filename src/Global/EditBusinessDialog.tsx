@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BusinessData } from "@/services/business";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Select,
@@ -12,13 +12,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { CategoryResponseData } from "@/services/category";
 
 interface EditBusinessDialogProps {
   business: BusinessData | null;
   isOpen: boolean;
   onClose: () => void;
   onEdit: (businessId: string, updatedData: Partial<BusinessData>) => void;
-  categories: string[];
+  categories: CategoryResponseData[] | undefined;
 }
 
 export function EditBusinessDialog({
@@ -28,9 +29,17 @@ export function EditBusinessDialog({
   onEdit,
   categories,
 }: EditBusinessDialogProps) {
+  // Initialize formData with business details if available
   const [formData, setFormData] = useState<Partial<BusinessData>>(
-    business || {}
+    business ? { ...business } : {}
   );
+
+  // Update formData when business changes
+  useEffect(() => {
+    if (business) {
+      setFormData({ ...business });
+    }
+  }, [business]);
 
   if (!business || !isOpen) return null;
 
@@ -50,6 +59,12 @@ export function EditBusinessDialog({
         className: "bg-red-500 border-none text-white font-inter text-lg",
       });
     }
+  };
+
+  // Function to handle input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   return (
@@ -78,20 +93,18 @@ export function EditBusinessDialog({
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
+              name="name" // Added name attribute for input
               value={formData.name || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={handleInputChange} // Use the new input change handler
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="address">Address</Label>
             <Input
               id="address"
+              name="address" // Added name attribute for input
               value={formData.address || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, address: e.target.value })
-              }
+              onChange={handleInputChange} // Use the new input change handler
             />
           </div>
           <div className="grid gap-2">
@@ -106,9 +119,9 @@ export function EditBusinessDialog({
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
+                {categories?.map((category) => (
+                  <SelectItem key={category.name} value={category.name}>
+                    {category.name}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -25,6 +25,7 @@ import { EditBusinessDialog } from "@/Global/EditBusinessDialog";
 import { BusinessDetailsModal } from "@/Global/BusinessDetailsModal";
 import { deleteBusiness, updateBusiness } from "@/services/business";
 import { useToast } from "@/hooks/use-toast";
+import { CategoryResponseData, getCategories } from "@/services/category";
 
 export default function Businesses() {
   const { toast } = useToast();
@@ -43,12 +44,16 @@ export default function Businesses() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [categories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryResponseData[]>();
   const [searchTerm, setSearchTerm] = useState("");
+  const [updatedBusinessData, setUpdatedBusinessData] = useState<
+    Partial<BusinessData>
+  >({});
 
   const totalPages = Math.ceil(businesses.length / itemsPerPage);
 
   const getCurrentBusinesses = () => {
+    console.log(updatedBusinessData);
     const currentBusinesses =
       activeTab === "all" ? businesses : promotedBusinesses;
 
@@ -68,8 +73,10 @@ export default function Businesses() {
     try {
       setIsLoading(true);
       const businesses = await getAllBusinesses();
+      const categories = await getCategories();
       console.log("Business Data", businesses.data);
-
+      console.log("Categories", categories);
+      setCategories(categories);
       // Separate businesses into regular and promoted
       const promoted = businesses.data.filter(
         (business: BusinessData) => business?.deleteAt
@@ -260,6 +267,7 @@ export default function Businesses() {
     businessId: string,
     updatedData: Partial<BusinessData>
   ) => {
+    setUpdatedBusinessData(updatedData);
     try {
       await updateBusiness(businessId, updatedData);
       await fetchBusinesses(); // Refresh the list
@@ -563,6 +571,7 @@ export default function Businesses() {
         onClose={() => {
           setIsEditDialogOpen(false);
           setSelectedBusiness(null);
+          setUpdatedBusinessData({});
         }}
         onEdit={handleEdit}
         categories={categories}
