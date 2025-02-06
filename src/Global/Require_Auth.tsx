@@ -6,11 +6,21 @@ interface RequireAuthProps {
   children: JSX.Element;
 }
 
+const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    const cookieValue = parts.pop();
+    return cookieValue ? cookieValue.split(";").shift() : undefined;
+  }
+};
+
 export const RequireAuth = ({ children }: RequireAuthProps) => {
   const { user } = useAuth();
   const location = useLocation();
+  const token = getCookie("token"); // Check for the token in cookies
 
-  if (!user) {
+  if (!user || !token) {
     toast({
       title: "Unauthorized access",
       description: "Unauthorized access. Please login to continue.",
