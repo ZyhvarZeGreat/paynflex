@@ -44,6 +44,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setAuthToken(null); // Clear the auth token if no user
     }
+
+    // Set up a timeout to sign out the user after 15 minutes
+    const timeoutId = setTimeout(() => {
+      signout(); // Call signout function
+    }, 15 * 60 * 1000); // 15 minutes in milliseconds
+
+    // Clear timeout if user changes or component unmounts
+    return () => clearTimeout(timeoutId);
   }, [user]);
 
   const signin = async (email: string, password: string) => {
