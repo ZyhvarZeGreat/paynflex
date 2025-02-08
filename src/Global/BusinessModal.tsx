@@ -21,7 +21,7 @@ import {
   DialogTrigger,
   DialogOverlay,
 } from "@/components/ui/dialog";
-import { BusinessData, createBusiness } from "@/services/business";
+import { createBusiness } from "@/services/business";
 import { toast } from "@/hooks/use-toast";
 import { CategoryResponseData, getCategories } from "@/services/category";
 
@@ -34,14 +34,13 @@ export function AddBusinessModal({
   const [categories, setCategories] = useState<CategoryResponseData[]>([]);
   const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<BusinessData>({
-    name: "",
-    description: "",
-    address: "",
-    category: "",
-    image: null,
-    deleteAt: new Date(),
-  });
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [address, setAddress] = useState("");
+  const [category, setCategory] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+  const [deleteAt, setDeleteAt] = useState<Date>(new Date());
+  const [isDeleteAtEnabled, setIsDeleteAtEnabled] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -64,18 +63,27 @@ export function AddBusinessModal({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "deleteAt" ? new Date(value) : value,
-    }));
+    switch (name) {
+      case "name":
+        setName(value);
+        break;
+      case "description":
+        setDescription(value);
+        break;
+      case "address":
+        setAddress(value);
+        break;
+      case "deleteAt":
+        setDeleteAt(new Date(value));
+        break;
+      default:
+        break;
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      setFormData((prev) => ({
-        ...prev,
-        image: e.target.files![0],
-      }));
+      setImage(e.target.files![0]);
     }
   };
 
@@ -92,21 +100,31 @@ export function AddBusinessModal({
   const handleAddBusiness = async () => {
     setIsLoading(true);
     try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("address", address);
+      formData.append("category", "67a539bc9d4ddefbb05dcfd3");
+      if (image) {
+        formData.append("image", image);
+      }
+      formData.append("deleteAt", deleteAt.toISOString());
+
+      console.log("Form Data", formData);
       await createBusiness(formData);
+
       toast({
         description: "Business added successfully",
         className: "bg-green-500 border-none text-white font-inter text-lg",
       });
 
       // Reset form
-      setFormData({
-        name: "",
-        description: "",
-        address: "",
-        category: "",
-        image: null,
-        deleteAt: new Date(),
-      });
+      setName("");
+      setDescription("");
+      setAddress("");
+      setCategory("");
+      setImage(null);
+      setDeleteAt(new Date());
       setStep(1);
 
       // Call the callback function if provided
@@ -129,8 +147,12 @@ export function AddBusinessModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here
-    console.log(formData);
+    console.log({ name, description, address, category, image, deleteAt });
     handleAddBusiness();
+  };
+
+  const handleDeleteAtToggle = () => {
+    setIsDeleteAtEnabled((prev) => !prev);
   };
 
   return (
@@ -140,7 +162,7 @@ export function AddBusinessModal({
       </DialogTrigger>
 
       <DialogOverlay className="bg-black/50" />
-      <DialogContent className="sm:max-w-[390px] h-[744px] flex flex-col gap-8  font-inter  ">
+      <DialogContent className="sm:max-w-[390px] h-[764px] flex flex-col gap-8  font-inter  ">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -164,7 +186,7 @@ export function AddBusinessModal({
                 <Input
                   name="name"
                   placeholder="Business name"
-                  value={formData.name}
+                  value={name}
                   onChange={handleChange}
                   required
                 />
@@ -177,7 +199,7 @@ export function AddBusinessModal({
                 <Textarea
                   name="description"
                   placeholder="Describe your business"
-                  value={formData.description}
+                  value={description}
                   onChange={handleChange}
                   required
                 />
@@ -190,7 +212,7 @@ export function AddBusinessModal({
                 <Textarea
                   name="address"
                   placeholder="Where is this business located?"
-                  value={formData.address}
+                  value={address}
                   onChange={handleChange}
                   required
                 />
@@ -201,10 +223,8 @@ export function AddBusinessModal({
                   Category
                 </label>
                 <Select
-                  value={formData.category}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, category: value })
-                  }
+                  value={category}
+                  onValueChange={(value) => setCategory(value)}
                   required
                 >
                   <SelectTrigger>
@@ -227,12 +247,21 @@ export function AddBusinessModal({
                 <label className="text-base font-medium text-[#464A4F]">
                   Expiry Window (Optional)
                 </label>
+                <div className="flex items-center">
+                  <label className="mr-2">Enable Expiry:</label>
+                  <input
+                    type="checkbox"
+                    checked={isDeleteAtEnabled}
+                    onChange={handleDeleteAtToggle}
+                  />
+                </div>
                 <Input
                   type="datetime-local"
                   name="deleteAt"
-                  value={formData?.deleteAt?.toISOString().slice(0, 16)}
+                  value={deleteAt.toISOString().slice(0, 16)}
                   onChange={handleChange}
-                  required
+                  required={isDeleteAtEnabled}
+                  disabled={!isDeleteAtEnabled}
                 />
               </div>
 
@@ -285,9 +314,9 @@ export function AddBusinessModal({
                     onChange={handleImageUpload}
                   />
                   <div className="flex h-full items-center justify-center">
-                    {formData.image ? (
+                    {image ? (
                       <img
-                        src={URL.createObjectURL(formData.image)}
+                        src={URL.createObjectURL(image)}
                         alt="Upload"
                         className="h-full w-full object-cover rounded-lg"
                       />

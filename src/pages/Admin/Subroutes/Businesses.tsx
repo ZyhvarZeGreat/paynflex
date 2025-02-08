@@ -84,6 +84,7 @@ export default function Businesses() {
       const regular = businesses.data.filter(
         (business: BusinessData) => !business?.deleteAt
       );
+      console.log(regular);
 
       setBusinesses(regular);
       setPromotedBusinesses(promoted);
@@ -429,7 +430,7 @@ export default function Businesses() {
                       {business.address}
                     </TableCell>
                     <TableCell className="text-black font-light">
-                      {business.category}
+                      {business.category.name}
                     </TableCell>
                     <TableCell className="text-black font-light">
                       {business.images ? (

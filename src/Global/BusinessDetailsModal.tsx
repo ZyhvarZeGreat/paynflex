@@ -41,7 +41,7 @@ export function BusinessDetailsModal({
             <div className="flex justify-center">
               <img
                 src={business.images}
-                alt={business.name}
+                alt={business.name || "Not provided"}
                 className="w-full h-48 object-cover rounded-lg"
               />
             </div>
@@ -56,18 +56,22 @@ export function BusinessDetailsModal({
                   Business Name
                 </h3>
                 <p className="mt-1 text-base font-medium text-black">
-                  {business.name}
+                  {business.name || "Not provided"}
                 </p>
               </div>
 
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Category</h3>
-                <p className="mt-1 text-base text-black">{business.category}</p>
+                <p className="mt-1 text-base text-black">
+                  {business.category.name || "Not provided"}
+                </p>
               </div>
 
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Address</h3>
-                <p className="mt-1 text-base text-black">{business.address}</p>
+                <p className="mt-1 text-base text-black">
+                  {business.address || "Not provided"}
+                </p>
               </div>
 
               <div>

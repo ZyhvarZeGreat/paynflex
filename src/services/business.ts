@@ -3,7 +3,13 @@ import axios, { AxiosError } from "axios";
 export interface BusinessData {
   _id?: string | undefined;
   name: string;
-  category: string;
+  category: {
+    _id?: string;
+    name: string;
+    createdAt?: string;
+    updatedAt?: string;
+    __v?: number;
+  };
   address: string;
   description: string;
   images?: string;
@@ -21,24 +27,12 @@ interface ApiError {
   status: number;
 }
 
-export const createBusiness = async (data: BusinessData) => {
+export const createBusiness = async (data: FormData) => {
   console.log("Business Data", data);
   try {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("address", data.address);
-    formData.append("category", data.category);
-    if (data?.deleteAt) {
-      formData.append("deleteAt", data?.deleteAt.toISOString());
-    }
-    if (data.image instanceof File) {
-      formData.append("image", data.image);
-    }
-
     const response = await axiosInstance.post(
       "https://paynflex-k360.onrender.com/v1/business",
-      formData,
+      data,
       {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -136,28 +130,23 @@ export const updateBusiness = async (
   data: Partial<BusinessData>
 ) => {
   try {
-    const formData = new FormData();
-
-    // Append all non-null fields to formData
-    if (data.name) formData.append("name", data.name);
-    if (data.description) formData.append("description", data.description);
-    if (data.address) formData.append("address", data.address);
-    if (data.category) formData.append("category", data.category);
-    if (data.phoneNumber) formData.append("phoneNumber", data.phoneNumber);
-    if (data.email) formData.append("email", data.email);
-    if (data.website) formData.append("website", data.website);
-
-    // Handle image update if provided
-    if (data?.image instanceof File) {
-      formData.append("image", data.image);
-    }
+    const updateData: Partial<BusinessData> = {
+      name: data.name,
+      description: data.description,
+      address: data.address,
+      category: data.category,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      website: data.website,
+      image: data.image,
+    };
 
     const response = await axiosInstance.put(
       `https://paynflex-k360.onrender.com/v1/business/${id}`,
-      formData,
+      updateData,
       {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       }
     );

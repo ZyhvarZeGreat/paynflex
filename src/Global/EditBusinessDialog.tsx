@@ -30,8 +30,12 @@ export function EditBusinessDialog({
   categories,
 }: EditBusinessDialogProps) {
   // Initialize formData with business details if available
-  const [formData, setFormData] = useState<Partial<BusinessData>>(
-    business ? { ...business } : {}
+  const [formData, setFormData] = useState<
+    Partial<BusinessData & { category: { name: string } }>
+  >(
+    business
+      ? { ...business, category: business.category || { name: "" } }
+      : { category: { name: "" } }
   );
 
   // Update formData when business changes
@@ -110,9 +114,9 @@ export function EditBusinessDialog({
           <div className="grid gap-2">
             <Label htmlFor="category">Category</Label>
             <Select
-              value={formData.category}
+              value={formData.category?.name || ""}
               onValueChange={(value) =>
-                setFormData({ ...formData, category: value })
+                setFormData({ ...formData, category: { name: value } })
               }
             >
               <SelectTrigger>
