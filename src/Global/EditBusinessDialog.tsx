@@ -124,7 +124,10 @@ export function EditBusinessDialog({
               </SelectTrigger>
               <SelectContent>
                 {categories?.map((category) => (
-                  <SelectItem key={category.name} value={category.name}>
+                  <SelectItem
+                    key={category.name}
+                    value={"67a539bc9d4ddefbb05dcfd3"}
+                  >
                     {category.name}
                   </SelectItem>
                 ))}
