@@ -232,10 +232,7 @@ export function AddBusinessModal({
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem
-                        key={category.name}
-                        value={category.name.toLowerCase()}
-                      >
+                      <SelectItem key={category.name} value={category._id}>
                         {category.name}
                       </SelectItem>
                     ))}
