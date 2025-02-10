@@ -81,12 +81,8 @@ export default function Businesses() {
       const promoted = businesses.data.filter(
         (business: BusinessData) => business?.deleteAt
       );
-      const regular = businesses.data.filter(
-        (business: BusinessData) => !business?.deleteAt
-      );
-      console.log(regular);
 
-      setBusinesses(regular);
+      setBusinesses(businesses.data);
       setPromotedBusinesses(promoted);
     } catch (err: unknown) {
       console.log(err);
