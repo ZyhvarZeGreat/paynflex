@@ -205,8 +205,26 @@ const users = [
 ];
 
 export default function Rewards() {
+  const handleDownload = () => {
+    // Logic to download the table data
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      users
+        .map(
+          (e) =>
+            `${e.name},${e.pointsRedeemed},${e.pointsLeft},${e.dateRedeemed}`
+        )
+        .join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "users_data.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click();
+  };
+
   return (
-    <div className="p-6 space-y-6 min-h-screen  ">
+    <div className="p-6 space-y-6 min-h-screen">
       <div className="w-full">
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {metrics.map((metric, index) => (
@@ -247,6 +265,9 @@ export default function Rewards() {
         <div className="p-6 flex justify-between items-center">
           <h2 className="text-xl font-semibold">Users</h2>
           <PointsManager />
+          <Button onClick={handleDownload} className="mb-4">
+            Export Data
+          </Button>
         </div>
         <Table>
           <TableHeader>

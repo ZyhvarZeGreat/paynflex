@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+"use client";
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -280,6 +282,25 @@ export default function Businesses() {
     }
   };
 
+  const handleDownload = (data: BusinessData[], headers: string[]) => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" + // Column headers
+      data
+        .map((item: BusinessData) =>
+          headers.map((header) => item[header as keyof BusinessData]).join(",")
+        )
+        .join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "businesses_data.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click();
+    document.body.removeChild(link); // Cleanup
+  };
+
   return (
     <div className="min-h-screen  ">
       {/* Metrics Grid */}
@@ -346,6 +367,13 @@ export default function Businesses() {
             className="px-3 py-2 border border-[#E0E2E7] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black/5"
           />
           <AddBusinessModal onBusinessAdded={fetchBusinesses} />
+          <Button
+            onClick={() =>
+              handleDownload(businesses, ["name", "address", "status"])
+            }
+          >
+            Export Data
+          </Button>
         </div>
       </div>
 

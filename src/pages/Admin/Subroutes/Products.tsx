@@ -34,7 +34,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
-
 export default function ProductDashboard() {
   const [products, setProducts] = useState<ProductData[]>([]);
   const [categories, setCategories] = useState<CategoryResponseData[]>([]);
@@ -173,6 +172,24 @@ export default function ProductDashboard() {
       setIsSubmitting(false);
     }
   };
+  const handleDownload = (data: ProductData[], headers: string[]) => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" + // Column headers
+      data
+        .map((item: ProductData) =>
+          headers.map((header) => item[header as keyof ProductData]).join(",")
+        )
+        .join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "businesses_data.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click();
+    document.body.removeChild(link); // Cleanup
+  };
 
   return (
     <div className="grid grid-cols-12  min-h-screen ">
@@ -286,6 +303,14 @@ export default function ProductDashboard() {
         {/* Add Product Button */}
         <div className="mb-6 flex justify-end">
           <AddProductModal onProductAdded={fetchProducts} />
+          <Button
+            onClick={() => {
+              handleDownload(products, ["name", "address", "status"]);
+            }}
+            className="mb-4"
+          >
+            Export Data
+          </Button>
         </div>
 
         {/* Products Grid */}

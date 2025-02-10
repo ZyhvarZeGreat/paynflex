@@ -266,6 +266,7 @@ export default function User() {
       </div>
 
       {/* Chart Section */}
+
       <Card className=" p-6">
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
           <Select defaultValue="user-activity" onValueChange={handleViewChange}>
@@ -289,6 +290,7 @@ export default function User() {
             </SelectContent>
           </Select>
         </div>
+
         <div className="h-[400px] w-full">
           <ChartContainer className="h-full w-full" config={chartConfig}>
             <BarChart accessibilityLayer data={chartData}>

@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 // import { Building2, BadgeCheck, Clock, XCircle } from "lucide-react";
 
 import { BarChart, Bar, XAxis, ResponsiveContainer } from "recharts";
+import { Button } from "@/components/ui/button";
 
 export default function Transaction() {
   const generateRandomData = (length: number, view: string) => {
@@ -298,6 +299,24 @@ export default function Transaction() {
       increase: "75%",
     },
   ];
+
+  const handleDownload = (data: [], headers: string[]) => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" + // Column headers
+      data
+        .map((item) => headers.map((header) => item[header]).join(","))
+        .join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "transactions_data.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click();
+    document.body.removeChild(link); // Cleanup
+  };
+
   return (
     <div className="min-h-screen  p-6">
       {/* Metrics Grid */}
@@ -372,6 +391,15 @@ export default function Transaction() {
           </div>
         </div>
       </Card>
+
+      <Button
+        onClick={() =>
+          handleDownload(transactions, ["date", "amount", "status"])
+        }
+        className="mb-4"
+      >
+        Export Transactions
+      </Button>
     </div>
   );
 }

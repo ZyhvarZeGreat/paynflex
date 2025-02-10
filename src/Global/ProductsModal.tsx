@@ -18,7 +18,7 @@ export function AddProductModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="border flex items-center border-[#E0E2E780] h-[35px] w-[118px] text-sm font-medium rounded-lg text-black hover:bg-white/90">
+      <DialogTrigger className="border flex items-center border-[#E0E2E780] h-10 px-4 py-2 text-sm font-medium rounded-lg text-black hover:bg-white/90">
         <Plus className="h-4" />
         Add Product
       </DialogTrigger>
