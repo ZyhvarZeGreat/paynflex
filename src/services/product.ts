@@ -4,9 +4,10 @@ import axios, { AxiosError } from "axios";
 export interface ProductData {
   name: string;
   price: number;
-  category: "AIRTIME" | "DATA" | "CABLE" | "INTERNET";
+  category: string;
   image: File | null;
   images?: string;
+  serviceProvider: string;
 }
 
 interface ApiError {
@@ -21,6 +22,7 @@ export const createProduct = async (data: ProductData) => {
     formData.append("name", data.name);
     formData.append("price", data.price.toString());
     formData.append("category", data.category);
+    formData.append("serviceProvider", data.serviceProvider);
     if (data.image) {
       formData.append("image", data.image);
     }

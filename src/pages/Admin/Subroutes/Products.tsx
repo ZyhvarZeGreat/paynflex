@@ -301,8 +301,11 @@ export default function ProductDashboard() {
         </div>
 
         {/* Add Product Button */}
-        <div className="mb-6 flex justify-end">
-          <AddProductModal onProductAdded={fetchProducts} />
+        <div className="mb-6 ml-4 flex justify-end">
+          <AddProductModal
+            categories={categories}
+            onProductAdded={fetchProducts}
+          />
           <Button
             onClick={() => {
               handleDownload(products, ["name", "address", "status"]);

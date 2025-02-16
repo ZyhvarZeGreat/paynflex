@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { createProduct, ProductData } from "@/services/product";
 import { toast } from "@/hooks/use-toast";
+import { CategoryResponseData, getCategories } from "@/services/category";
+import { AxiosError } from "axios";
 export default function ProductCard({
   wait,
   setOpen,
@@ -24,11 +26,14 @@ export default function ProductCard({
   setOpen: (open: boolean) => void;
   onProductAdded?: () => void;
 }) {
+  const [categories, setCategories] = useState<CategoryResponseData[]>([]);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState<ProductData>({
     name: "",
     price: 0,
     category: "DATA",
     image: null,
+    serviceProvider: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,6 +65,7 @@ export default function ProductCard({
         price: 0,
         category: "DATA",
         image: null,
+        serviceProvider: "",
       });
 
       // Call the callback function if provided
@@ -79,6 +85,22 @@ export default function ProductCard({
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await getCategories();
+      console.log(response);
+      setCategories(response);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      setError(axiosError.message || "Failed to fetch categories");
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  });
+
+  console.log(categories);
   return (
     <div className="w-full h-full  bg-white rounded-lg ">
       <div className="p-4 space-y-6">
@@ -97,6 +119,18 @@ export default function ProductCard({
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-base font-medium">Service Provider</Label>
+            <Input
+              placeholder="MTN"
+              value={formData.serviceProvider}
+              onChange={(e) =>
+                setFormData({ ...formData, serviceProvider: e.target.value })
               }
               required
             />
@@ -131,19 +165,20 @@ export default function ProductCard({
             <Label className="text-base font-medium">Product category</Label>
             <Select
               value={formData.category}
-              onValueChange={(
-                value: "AIRTIME" | "DATA" | "CABLE" | "INTERNET"
-              ) => setFormData({ ...formData, category: value })}
+              onValueChange={(value: string) =>
+                setFormData({ ...formData, category: value })
+              }
               required
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="DATA">Data Plans</SelectItem>
-                <SelectItem value="AIRTIME">Airtime</SelectItem>
-                <SelectItem value="CABLE">Cable TV</SelectItem>
-                <SelectItem value="INTERNET">Internet</SelectItem>
+                {categories.map((category: CategoryResponseData) => (
+                  <SelectItem key={category._id} value={category._id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

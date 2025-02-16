@@ -23,7 +23,7 @@ export function AddProductModal({
         Add Product
       </DialogTrigger>
       <DialogOverlay className="bg-black/50" />
-      <DialogContent className="sm:max-w-[390px] p-2 h-[754px] flex flex-col gap-8 font-inter">
+      <DialogContent className="sm:max-w-[390px] p-2 h-[784px] flex flex-col gap-8 font-inter">
         <ProductCard
           wait={async () => {
             await wait();
